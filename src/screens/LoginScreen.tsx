@@ -2,9 +2,9 @@ import styled from '@emotion/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { InlineButton } from '@/components/common/InlineButton';
 import { IconBadge } from '@/components/common/IconBadge';
+import { useKakaoLogin } from '@/features/auth/useKakaoLogin';
 import { IcKakao, IcLink, IcSparkles } from '@/assets/icons';
 import { BADGE_BG_BRAND, BADGE_ICON_BRAND } from '@/constants/iconBadge';
-import { useAuthStore } from '@/stores/useAuthStore';
 
 const KAKAO_YELLOW = '#FEE500';
 const COPYRIGHT_TEXT = '© 2026, 소프티 All rights reserved.';
@@ -25,12 +25,7 @@ const loginFeatureList = [
 ] as const;
 
 export const LoginScreen = () => {
-  const setAuthenticated = useAuthStore(state => state.setAuthenticated);
-
-  const handleKakaoLogin = () => {
-    // TODO: 카카오 로그인 연결=
-    setAuthenticated(true);
-  };
+  const { isKakaoLoginLoading, handleKakaoLogin } = useKakaoLogin();
 
   return (
     <LoginSafeArea edges={['top', 'bottom']}>
@@ -70,6 +65,7 @@ export const LoginScreen = () => {
               bgColor={KAKAO_YELLOW}
               color="#000000"
               icon={IcKakao}
+              disabled={isKakaoLoginLoading}
               onPress={handleKakaoLogin}
             />
 

@@ -1,18 +1,19 @@
 import { apiClient, type ApiResponse } from '@/services/http';
 
-export interface KakaoTokenLoginRequest {
+export interface KakaoLoginRequest {
   kakaoAccessToken: string;
 }
 
-export interface KakaoTokenLoginData {
+export interface KakaoLoginData {
   accessToken: string;
   refreshToken: string;
+  registrationRequired: boolean;
 }
 
 export const authApi = {
-  loginWithKakaoToken: async (payload: KakaoTokenLoginRequest) => {
-    const response = await apiClient.post<ApiResponse<KakaoTokenLoginData>>(
-      '/auth/kakao/token-login',
+  loginWithKakaoToken: async (payload: KakaoLoginRequest) => {
+    const response = await apiClient.post<ApiResponse<KakaoLoginData>>(
+      '/auth/kakao/login',
       payload
     );
 

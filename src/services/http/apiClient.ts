@@ -7,10 +7,13 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+const baseURL = (process.env.EXPO_PUBLIC_API_BASE_URL ?? '').replace(/\/+$/, '');
+
 export const apiClient = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL ?? '',
+  baseURL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
 });
