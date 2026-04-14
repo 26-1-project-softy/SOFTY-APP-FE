@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "소프티",
+    "scheme": "softy",
     "slug": "softy-parent",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,22 +11,39 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#55B5A6"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.softy.parent",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#55B5A6"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font"]
+    "plugins": [
+      "expo-font",
+      [
+        "@react-native-seoul/kakao-login",
+        {
+          "kakaoAppKey": "a6c5cce157633518d350709ee7be25cd",
+          "kotlinVersion": "2.1.20"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": ["https://devrepo.kakao.com/nexus/content/groups/public/"]
+          }
+        }
+      ]
+    ]
   }
 }
