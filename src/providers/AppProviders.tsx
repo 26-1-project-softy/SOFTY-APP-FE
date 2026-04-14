@@ -3,6 +3,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/providers/ThemeProvider';
+import { Toast } from '@/components/common/Toast';
 import { queryClient } from '@/providers/queryClient';
 
 export const AppProviders = ({ children }: PropsWithChildren) => {
@@ -11,6 +12,7 @@ export const AppProviders = ({ children }: PropsWithChildren) => {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <NavigationContainer>{children}</NavigationContainer>
+          <Toast />
         </ThemeProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
