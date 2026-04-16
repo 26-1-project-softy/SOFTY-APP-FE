@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/providers/ThemeProvider';
 import { Toast } from '@/components/common/Toast';
+import { UnauthorizedSessionSync } from '@/providers/UnauthorizedSessionSync';
 import { queryClient } from '@/providers/queryClient';
 
 export const AppProviders = ({ children }: PropsWithChildren) => {
@@ -13,6 +14,7 @@ export const AppProviders = ({ children }: PropsWithChildren) => {
         <ThemeProvider>
           <NavigationContainer>{children}</NavigationContainer>
           <Toast />
+          <UnauthorizedSessionSync />
         </ThemeProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
