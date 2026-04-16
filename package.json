@@ -11,7 +11,9 @@
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@emotion/native": "^11.11.0",
@@ -51,7 +53,8 @@
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.2",
     "react-native-svg-transformer": "^1.5.3",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^4.1.4"
   },
   "private": true,
   "lint-staged": {
