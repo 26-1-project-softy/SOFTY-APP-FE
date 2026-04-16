@@ -4,6 +4,7 @@ import { login } from '@react-native-seoul/kakao-login';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '@/types/navigation';
 import { setAccessToken as setHttpAccessToken } from '@/services/http';
+import { getAuthErrorMessage } from '@/features/auth/getAuthErrorMessage';
 import { authApi } from '@/services/auth/authApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
@@ -11,25 +12,10 @@ import { AUTH_ROUTES } from '@/navigation/routes';
 
 type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
-const extractErrorMessage = (error: unknown): string => {
-  if (error instanceof Error) {
-    return error.message.trim();
-  }
-
-  if (
-    typeof error === 'object' &&
-    error !== null &&
-    'message' in error &&
-    typeof error.message === 'string'
-  ) {
-    return error.message.trim();
-  }
-
-  return '';
-};
+const KAKAO_LOGIN_ERROR_MESSAGE = '카카오 로그인 중 오류가 발생했어요. 다시 시도해 주세요.';
 
 const getKakaoLoginErrorMessage = (error: unknown): string | null => {
-  const message = extractErrorMessage(error);
+  const message = getAuthErrorMessage(error, '');
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes('cancel')) {
@@ -44,7 +30,7 @@ const getKakaoLoginErrorMessage = (error: unknown): string | null => {
     return message;
   }
 
-  return '카카오 로그인 중 오류가 발생했어요. 다시 시도해 주세요.';
+  return KAKAO_LOGIN_ERROR_MESSAGE;
 };
 
 export const useKakaoLogin = () => {
@@ -90,7 +76,9 @@ export const useKakaoLogin = () => {
         showToast(toastMessage, 'error');
       }
 
-      console.error('카카오 로그인 실패', error);
+      if (__DEV__) {
+        console.log('카카오 로그인 실패', error);
+      }
     } finally {
       setIsKakaoLoginLoading(false);
     }
