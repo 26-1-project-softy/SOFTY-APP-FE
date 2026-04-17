@@ -40,4 +40,10 @@ export const authApi = {
 
     return response.data.data;
   },
+
+  deleteAccount: async () => {
+    const response = await apiClient.delete<ApiResponse<Record<string, never>>>('/users/me');
+
+    return response.data.data;
+  },
 };

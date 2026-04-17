@@ -3,13 +3,42 @@ import { Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/common/Header';
 import { SettingsSectionCard } from '@/components/settings/SettingsSectionCard';
+import { Dialog } from '@/components/settings/Dialog';
+import { IconBadge } from '@/components/common/IconBadge';
+import { InlineButton } from '@/components/common/InlineButton';
 import { useLogout } from '@/features/auth/useLogout';
+import { useDeleteAccount } from '@/features/auth/useDeleteAccount';
+import { useState } from 'react';
+import { useTheme } from '@emotion/react';
+import { IcError } from '@/assets/icons';
 
 export const SettingsScreen = () => {
-  const { isLogoutLoading, handleLogout } = useLogout();
+  const theme = useTheme();
+  const [isDeleteAccountDialogVisible, setIsDeleteAccountDialogVisible] = useState(false);
 
-  const handleDeleteAccount = () => {
-    console.log('회원 탈퇴');
+  const { isLogoutLoading, handleLogout } = useLogout();
+  const { isDeleteAccountLoading, handleDeleteAccount } = useDeleteAccount();
+
+  const isAccountActionDisabled = isLogoutLoading || isDeleteAccountLoading;
+
+  const handleOpenDeleteAccountDialog = () => {
+    if (isAccountActionDisabled) return;
+
+    setIsDeleteAccountDialogVisible(true);
+  };
+
+  const handleCloseDeleteAccountDialog = () => {
+    if (isDeleteAccountLoading) return;
+
+    setIsDeleteAccountDialogVisible(false);
+  };
+
+  const handleConfirmDeleteAccount = async () => {
+    const isDeleted = await handleDeleteAccount();
+
+    if (isDeleted) {
+      setIsDeleteAccountDialogVisible(false);
+    }
   };
 
   return (
@@ -17,11 +46,11 @@ export const SettingsScreen = () => {
       <Header hasBackBtn title="설정" />
 
       <SettingsContentContainer>
-        <SettingsSectionCard title="계정">
+        <SettingsSectionCard title="계정 관리">
           <AccountActionList>
             <Pressable
               onPress={handleLogout}
-              disabled={isLogoutLoading}
+              disabled={isAccountActionDisabled}
               accessibilityRole="button"
               accessibilityLabel="로그아웃"
             >
@@ -35,7 +64,8 @@ export const SettingsScreen = () => {
             </Pressable>
 
             <Pressable
-              onPress={handleDeleteAccount}
+              onPress={handleOpenDeleteAccountDialog}
+              disabled={isAccountActionDisabled}
               accessibilityRole="button"
               accessibilityLabel="회원 탈퇴"
               android_ripple={{ color: 'rgba(0, 0, 0, 0.06)' }}
@@ -52,6 +82,47 @@ export const SettingsScreen = () => {
           </AccountActionList>
         </SettingsSectionCard>
       </SettingsContentContainer>
+
+      <Dialog
+        isVisible={isDeleteAccountDialogVisible}
+        title="정말 탈퇴하시겠어요?"
+        description={`탈퇴하면 학급 정보와 대화 내역이 모두 삭제되고,\n다시 복구할 수 없어요.`}
+        onRequestClose={handleCloseDeleteAccountDialog}
+        isDismissible={!isDeleteAccountLoading}
+        icon={
+          <IconBadge
+            symbol={IcError}
+            bgColor={theme.colors.semantic.errorSoft}
+            color={theme.colors.semantic.error}
+            iconSize={30}
+          />
+        }
+        footer={
+          <DialogButtonRow>
+            <DialogButtonWrapper>
+              <InlineButton
+                variant="ghost"
+                size="L"
+                label="취소"
+                disabled={isDeleteAccountLoading}
+                onPress={handleCloseDeleteAccountDialog}
+              />
+            </DialogButtonWrapper>
+
+            <DialogButtonWrapper>
+              <InlineButton
+                variant="primary"
+                size="L"
+                label="탈퇴하기"
+                bgColor={theme.colors.semantic.error}
+                color={theme.colors.text.textW}
+                disabled={isDeleteAccountLoading}
+                onPress={handleConfirmDeleteAccount}
+              />
+            </DialogButtonWrapper>
+          </DialogButtonRow>
+        }
+      />
     </SafeAreaView>
   );
 };
@@ -82,3 +153,12 @@ const AccountActionLabel = styled.Text<{
   color: $isDestructive ? theme.colors.semantic.error : theme.colors.text.text1,
   opacity: $pressed ? 0.7 : 1,
 }));
+
+const DialogButtonRow = styled.View({
+  flexDirection: 'row',
+  gap: 10,
+});
+
+const DialogButtonWrapper = styled.View({
+  flex: 1,
+});
