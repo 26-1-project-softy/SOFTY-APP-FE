@@ -13,6 +13,7 @@ interface HeaderProps {
   actionIcon?: IconComponent;
   onBackPress?: () => void;
   onActionPress?: () => void;
+  isActionDisabled?: boolean;
   actionAccessibilityLabel?: string;
 }
 
@@ -23,6 +24,7 @@ export const Header = ({
   actionIcon,
   onBackPress,
   onActionPress,
+  isActionDisabled,
   actionAccessibilityLabel,
 }: HeaderProps) => {
   const navigate = useNavigation();
@@ -66,6 +68,7 @@ export const Header = ({
             <IconButton
               icon={actionIcon}
               variant="plain"
+              disabled={isActionDisabled}
               onPress={onActionPress}
               accessibilityLabel={actionAccessibilityLabel}
             />
