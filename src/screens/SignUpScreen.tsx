@@ -37,7 +37,7 @@ export const SignUpScreen = () => {
 
   const handlePressSubmit = () => {
     if (isSubmitDisabled) return;
-    handlePressSignUp(signUpPayload);
+    void handlePressSignUp(signUpPayload);
   };
 
   return (
@@ -60,6 +60,7 @@ export const SignUpScreen = () => {
                 isRequired
                 value={parentName}
                 placeholder="홍길동"
+                helperText="실명을 입력해 주세요."
                 errorMessage={parentNameErrorMessage}
                 onChangeText={handleChangeParentName}
               />
@@ -73,6 +74,7 @@ export const SignUpScreen = () => {
                 isRequired
                 value={studentName}
                 placeholder="홍길동"
+                helperText="실명을 입력해 주세요."
                 errorMessage={studentNameErrorMessage}
                 onChangeText={handleChangeStudentName}
               />
