@@ -8,6 +8,7 @@ type TextFieldProps = {
   value: string;
   placeholder?: string;
   isRequired?: boolean;
+  helperText?: string;
   errorMessage?: string;
   onChangeText: (text: string) => void;
 } & Omit<TextInputProps, 'value' | 'onChangeText' | 'placeholder'>;
@@ -17,25 +18,29 @@ export const TextField = ({
   value,
   placeholder,
   isRequired = false,
+  helperText,
   errorMessage,
   onChangeText,
   ...textInputProps
 }: TextFieldProps) => {
   const theme = useTheme();
+  const hasError = Boolean(errorMessage);
+  const helperMessage = errorMessage ?? helperText;
 
   return (
     <FieldContainer>
-      {label && <FieldLabel label={label} isRequired={isRequired} />}
+      {label && <FieldLabel label={label} isRequired={isRequired} hasError={hasError} />}
 
       <FieldInput
         value={value}
         placeholder={placeholder}
         placeholderTextColor={theme.colors.text.text4}
         onChangeText={onChangeText}
+        $hasError={hasError}
         {...textInputProps}
       />
 
-      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+      {helperMessage && <HelperText $hasError={hasError}>{helperMessage}</HelperText>}
     </FieldContainer>
   );
 };
@@ -44,19 +49,19 @@ const FieldContainer = styled.View({
   gap: 8,
 });
 
-const FieldInput = styled(TextInput)(({ theme }) => ({
+const FieldInput = styled(TextInput)<{ $hasError: boolean }>(({ theme, $hasError }) => ({
   ...theme.fonts.body2,
   height: 40,
   paddingHorizontal: 12,
   paddingVertical: 8,
   borderWidth: 1,
-  borderColor: theme.colors.border.border2,
+  borderColor: $hasError ? theme.colors.semantic.error : theme.colors.border.border2,
   borderRadius: 8,
   color: theme.colors.text.text1,
   backgroundColor: theme.colors.background.bg1,
 }));
 
-const ErrorMessage = styled.Text(({ theme }) => ({
+const HelperText = styled.Text<{ $hasError: boolean }>(({ theme, $hasError }) => ({
   ...theme.fonts.caption,
-  color: theme.colors.semantic.error,
+  color: $hasError ? theme.colors.semantic.error : theme.colors.text.text4,
 }));

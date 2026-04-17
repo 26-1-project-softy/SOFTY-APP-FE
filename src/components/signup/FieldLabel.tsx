@@ -3,12 +3,13 @@ import styled from '@emotion/native';
 type FieldLabelRowProps = {
   label: string;
   isRequired?: boolean;
+  hasError?: boolean;
 };
 
-export const FieldLabel = ({ label, isRequired = false }: FieldLabelRowProps) => {
+export const FieldLabel = ({ label, isRequired = false, hasError = false }: FieldLabelRowProps) => {
   return (
     <FieldLabelContainer>
-      <FieldLabelText>{label}</FieldLabelText>
+      <FieldLabelText $hasError={hasError}>{label}</FieldLabelText>
       {isRequired && <FieldRequiredMark>*</FieldRequiredMark>}
     </FieldLabelContainer>
   );
@@ -20,9 +21,9 @@ const FieldLabelContainer = styled.View({
   gap: 4,
 });
 
-const FieldLabelText = styled.Text(({ theme }) => ({
+const FieldLabelText = styled.Text<{ $hasError: boolean }>(({ theme, $hasError }) => ({
   ...theme.fonts.labelS,
-  color: theme.colors.text.text1,
+  color: $hasError ? theme.colors.semantic.error : theme.colors.text.text1,
 }));
 
 const FieldRequiredMark = styled.Text(({ theme }) => ({
