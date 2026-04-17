@@ -146,9 +146,10 @@ export const SignUpScreen = () => {
   );
 };
 
-const SignUpSafeArea = styled(SafeAreaView)({
+const SignUpSafeArea = styled(SafeAreaView)(({ theme }) => ({
   flex: 1,
-});
+  backgroundColor: theme.colors.background.bg1,
+}));
 
 const SignUpScrollView = styled(ScrollView)({
   flex: 1,
