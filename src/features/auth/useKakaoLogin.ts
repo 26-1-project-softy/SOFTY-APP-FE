@@ -1,16 +1,10 @@
 import { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { login } from '@react-native-seoul/kakao-login';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { AuthStackParamList } from '@/types/navigation';
 import { setAccessToken as setHttpAccessToken } from '@/services/http';
 import { getAuthErrorMessage } from '@/features/auth/getAuthErrorMessage';
 import { authApi } from '@/services/auth/authApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
-import { AUTH_ROUTES } from '@/navigation/routes';
-
-type AuthNavigationProp = NativeStackNavigationProp<AuthStackParamList>;
 
 const KAKAO_LOGIN_ERROR_MESSAGE = '카카오 로그인 중 오류가 발생했어요. 다시 시도해 주세요.';
 
@@ -34,7 +28,6 @@ const getKakaoLoginErrorMessage = (error: unknown): string | null => {
 };
 
 export const useKakaoLogin = () => {
-  const navigation = useNavigation<AuthNavigationProp>();
   const [isKakaoLoginLoading, setIsKakaoLoginLoading] = useState(false);
 
   const setSignupRequired = useAuthStore(state => state.setSignupRequired);
@@ -61,7 +54,6 @@ export const useKakaoLogin = () => {
           refreshToken: loginData.refreshToken,
         });
 
-        navigation.replace(AUTH_ROUTES.SIGNUP);
         return;
       }
 

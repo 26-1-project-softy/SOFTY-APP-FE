@@ -10,14 +10,15 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   const authStatus = useAuthStore(state => state.authStatus);
-  const isSignedIn = authStatus === 'SIGNED_IN';
 
   return (
     <Stack.Navigator screenOptions={defaultStackScreenOptions}>
-      {isSignedIn ? (
+      {authStatus === 'SIGNED_IN' ? (
         <Stack.Screen name={ROOT_ROUTES.MAIN} component={MainNavigator} />
       ) : (
-        <Stack.Screen name={ROOT_ROUTES.AUTH} component={AuthNavigator} />
+        <Stack.Screen name={ROOT_ROUTES.AUTH} navigationKey={authStatus}>
+          {() => <AuthNavigator authStatus={authStatus} />}
+        </Stack.Screen>
       )}
     </Stack.Navigator>
   );
