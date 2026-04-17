@@ -8,9 +8,11 @@ import { RadioButton } from '@/components/signup/RadioButton';
 import { FieldLabel } from '@/components/signup/FieldLabel';
 import { useSignUpForm } from '@/features/auth/useSignUpForm';
 import { useSignUpSubmit } from '@/features/auth/useSignUpSubmit';
+import { useLogout } from '@/features/auth/useLogout';
 import { IcLogout } from '@/assets/icons';
 
 export const SignUpScreen = () => {
+  const { isLogoutLoading, handleLogout } = useLogout();
   const {
     parentName,
     studentName,
@@ -30,7 +32,6 @@ export const SignUpScreen = () => {
     handleSelectFemale,
     handleChangeClassCode,
   } = useSignUpForm();
-
   const { isSignUpSubmitting, handlePressSignUp } = useSignUpSubmit();
 
   const isSubmitDisabled = !isFormValid || isSignUpSubmitting;
@@ -42,7 +43,12 @@ export const SignUpScreen = () => {
 
   return (
     <SignUpSafeArea edges={['bottom']}>
-      <Header />
+      <Header
+        actionIcon={IcLogout}
+        onActionPress={handleLogout}
+        isActionDisabled={isLogoutLoading}
+        actionAccessibilityLabel="로그아웃"
+      />
 
       <SignUpScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <SignUpContentContainer>
