@@ -14,13 +14,13 @@ import {
 
 describe('signUpFormUtils', () => {
   describe('validateName', () => {
-    it('공백 제외 두 글자 이상이면 true를 반환한다', () => {
+    it('공백 제외 두 글자 이상인 완성된 한글 또는 영문 이름이면 true를 반환한다', () => {
       expect(validateName('홍길동')).toBe(true);
       expect(validateName('홍 길')).toBe(true);
       expect(validateName('Softy')).toBe(true);
     });
 
-    it('한 글자면 false를 반환한다', () => {
+    it('두 글자 미만이면 false를 반환한다', () => {
       expect(validateName('홍')).toBe(false);
       expect(validateName('A')).toBe(false);
     });
@@ -30,6 +30,12 @@ describe('signUpFormUtils', () => {
       expect(validateName('홍@동')).toBe(false);
       expect(validateName('Softy1')).toBe(false);
     });
+
+    it('자음 또는 모음만 포함된 미완성 한글이면 false를 반환한다', () => {
+      expect(validateName('ㅊ')).toBe(false);
+      expect(validateName('ㅏ')).toBe(false);
+      expect(validateName('ㅊㅏ')).toBe(false);
+    });
   });
 
   describe('getNameErrorMessage', () => {
@@ -37,9 +43,15 @@ describe('signUpFormUtils', () => {
       expect(getNameErrorMessage('')).toBeUndefined();
     });
 
-    it('특수문자나 숫자가 포함되면 특수문자 에러 메시지를 반환한다', () => {
-      expect(getNameErrorMessage('홍1동')).toBe('특수문자는 사용할 수 없어요.');
-      expect(getNameErrorMessage('홍@동')).toBe('특수문자는 사용할 수 없어요.');
+    it('숫자나 특수문자가 포함되면 문자 제한 에러 메시지를 반환한다', () => {
+      expect(getNameErrorMessage('홍1동')).toBe('한글과 영문만 입력할 수 있어요.');
+      expect(getNameErrorMessage('홍@동')).toBe('한글과 영문만 입력할 수 있어요.');
+    });
+
+    it('자음 또는 모음만 입력되면 미완성 한글 에러 메시지를 반환한다', () => {
+      expect(getNameErrorMessage('ㅊ')).toBe('완성된 한글 또는 영문 이름을 입력해 주세요.');
+      expect(getNameErrorMessage('ㅏ')).toBe('완성된 한글 또는 영문 이름을 입력해 주세요.');
+      expect(getNameErrorMessage('ㅊㅏ')).toBe('완성된 한글 또는 영문 이름을 입력해 주세요.');
     });
 
     it('두 글자 미만이면 길이 에러 메시지를 반환한다', () => {
@@ -77,6 +89,14 @@ describe('signUpFormUtils', () => {
       expect(validateBirthDate('20241301')).toBe(false);
       expect(validateBirthDate('202401')).toBe(false);
     });
+
+    it('최소 연도보다 작으면 false를 반환한다', () => {
+      expect(validateBirthDate('19991231')).toBe(false);
+    });
+
+    it('미래 날짜면 false를 반환한다', () => {
+      expect(validateBirthDate('20991231')).toBe(false);
+    });
   });
 
   describe('getBirthDateErrorMessage', () => {
@@ -86,6 +106,8 @@ describe('signUpFormUtils', () => {
 
     it('유효하지 않은 날짜면 날짜 에러 메시지를 반환한다', () => {
       expect(getBirthDateErrorMessage('20240230')).toBe('유효한 생년월일을 입력해 주세요.');
+      expect(getBirthDateErrorMessage('19991231')).toBe('유효한 생년월일을 입력해 주세요.');
+      expect(getBirthDateErrorMessage('20991231')).toBe('유효한 생년월일을 입력해 주세요.');
     });
 
     it('정상이면 undefined를 반환한다', () => {

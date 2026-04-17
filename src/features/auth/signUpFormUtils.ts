@@ -1,6 +1,5 @@
-import type { Gender } from '@/services/auth/authApi';
-
-const nameInvalidCharPattern = /[^A-Z가-힣\s]/i;
+const nameInvalidCharPattern = /[^A-Zㄱ-ㅎㅏ-ㅣ가-힣\s]/i;
+const incompleteKoreanCharPattern = /[ㄱ-ㅎㅏ-ㅣ]/;
 const classCodeInvalidCharPattern = /[^A-Z0-9-]/i;
 const classCodePattern = /^[A-Z0-9]{3}-[A-Z0-9]{3}$/;
 
@@ -12,20 +11,40 @@ export const hasInvalidNameChar = (value: string) => {
   return nameInvalidCharPattern.test(value);
 };
 
+export const hasIncompleteKoreanChar = (value: string) => {
+  const normalizedValue = getNormalizedName(value);
+
+  if (!normalizedValue) {
+    return false;
+  }
+
+  return incompleteKoreanCharPattern.test(value);
+};
+
 export const validateName = (value: string) => {
-  return !hasInvalidNameChar(value) && getNormalizedName(value).length >= 2;
+  const normalizedValue = getNormalizedName(value);
+
+  return (
+    !hasInvalidNameChar(value) && !hasIncompleteKoreanChar(value) && normalizedValue.length >= 2
+  );
 };
 
 export const getNameErrorMessage = (value: string) => {
+  const normalizedValue = getNormalizedName(value);
+
   if (value.length === 0) {
     return undefined;
   }
 
   if (hasInvalidNameChar(value)) {
-    return '특수문자는 사용할 수 없어요.';
+    return '한글과 영문만 입력할 수 있어요.';
   }
 
-  if (getNormalizedName(value).length < 2) {
+  if (hasIncompleteKoreanChar(value)) {
+    return '완성된 한글 또는 영문 이름을 입력해 주세요.';
+  }
+
+  if (normalizedValue.length < 2) {
     return '이름은 두 글자 이상 입력해 주세요.';
   }
 
@@ -129,5 +148,3 @@ export const getClassCodeErrorMessage = (value: string) => {
 
   return undefined;
 };
-
-export type { Gender };
