@@ -2,10 +2,18 @@ import styled from '@emotion/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/common/Header';
 import { IcSettings } from '@/assets/icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { MainStackParamList } from '@/types/navigation';
+import { MAIN_ROUTES } from '@/navigation/routes';
+
+type ThreadListNavigationProp = NativeStackNavigationProp<MainStackParamList>;
 
 export const ThreadListScreen = () => {
+  const navigation = useNavigation<ThreadListNavigationProp>();
+
   const handlePressSettings = () => {
-    // TODO: 설정 화면 이동
+    navigation.navigate(MAIN_ROUTES.SETTINGS);
   };
 
   return (
@@ -25,7 +33,6 @@ export const ThreadListScreen = () => {
 
 const ThreadListScreenContainer = styled(SafeAreaView)(({ theme }) => ({
   flex: 1,
-  backgroundColor: theme.colors.background.bg2,
 }));
 
 const ContentContainer = styled.View({
