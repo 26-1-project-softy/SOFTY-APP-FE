@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { logout as logoutFromKakao } from '@react-native-seoul/kakao-login';
-import { clearAccessToken } from '@/services/http';
-import { queryClient } from '@/providers/queryClient';
 import { getAuthErrorMessage } from '@/features/auth/getAuthErrorMessage';
-import { useAuthStore } from '@/stores/authStore';
+import { useResetAuthSession } from '@/features/auth/useResetAuthSession';
 import { useToastStore } from '@/stores/toastStore';
 
 const LOGOUT_SUCCESS_MESSAGE = '로그아웃되었어요.';
@@ -25,26 +23,10 @@ const getLogoutErrorMessage = (error: unknown) => {
   return LOGOUT_ERROR_MESSAGE;
 };
 
-const useLocalSessionReset = () => {
-  const clearSession = useAuthStore(state => state.clearSession);
-  const clearToasts = useToastStore(state => state.clearToasts);
-
-  const resetLocalSession = () => {
-    clearAccessToken();
-    queryClient.clear();
-    clearToasts();
-    clearSession();
-  };
-
-  return {
-    resetLocalSession,
-  };
-};
-
 export const useLogout = () => {
   const [isLogoutLoading, setIsLogoutLoading] = useState(false);
 
-  const { resetLocalSession } = useLocalSessionReset();
+  const { resetAuthSession } = useResetAuthSession();
   const showToast = useToastStore(state => state.showToast);
 
   const handleLogout = async () => {
@@ -65,7 +47,7 @@ export const useLogout = () => {
         console.log('카카오 SDK 로그아웃 실패', error);
       }
     } finally {
-      resetLocalSession();
+      resetAuthSession();
       showToast(toastMessage, toastType);
       setIsLogoutLoading(false);
     }
