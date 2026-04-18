@@ -1,0 +1,25 @@
+# --- Caches (safe to exclude for EAS Build) ---
+# Root-level caches
+.cache/
+.gradle/
+.expo/
+.expo-shared/
+
+# Package manager caches
+node_modules/.cache/
+.yarn/cache/
+.pnpm-store/
+.npm/
+
+# Android build caches
+android/.gradle/
+android/build/
+android/app/build/
+
+# iOS build caches
+ios/build/
+ios/DerivedData/
+
+# Web/Expo export caches
+dist/
+web-build/
