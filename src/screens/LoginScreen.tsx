@@ -3,11 +3,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { InlineButton } from '@/components/common/InlineButton';
 import { IconBadge } from '@/components/common/IconBadge';
 import { useKakaoLogin } from '@/features/auth/useKakaoLogin';
-import { IcKakao, IcLink, IcSparkles } from '@/assets/icons';
+import { IcBrandLogo, IcKakao, IcLink, IcSparkles } from '@/assets/icons';
 import { BADGE_BG_BRAND, BADGE_ICON_BRAND } from '@/constants/iconBadge';
 
 const KAKAO_YELLOW = '#FEE500';
-const COPYRIGHT_TEXT = '© 2026, 소프티 All rights reserved.';
+const COPYRIGHT_TEXT = '© 2026, SOFTY All rights reserved.';
 
 const loginFeatureList = [
   {
@@ -32,7 +32,8 @@ export const LoginScreen = () => {
       <LoginScreenContainer>
         <ContentContainer>
           <BrandSection>
-            <BrandTitle>소프티</BrandTitle>
+            <IcBrandLogo width={80} height={80} />
+            <BrandTitle>{`SOFTY`}</BrandTitle>
             <BrandDescription>{`선생님과 학부모를 잇는\n학급 소통 공간`}</BrandDescription>
           </BrandSection>
 
@@ -89,7 +90,7 @@ const LoginSafeArea = styled(SafeAreaView)(({ theme }) => ({
 const LoginScreenContainer = styled.View({
   flex: 1,
   paddingHorizontal: 16,
-  gap: 80,
+  gap: 60,
 });
 
 const ContentContainer = styled.View({
@@ -100,7 +101,7 @@ const ContentContainer = styled.View({
 
 const BrandSection = styled.View({
   alignItems: 'center',
-  gap: 16,
+  gap: 8,
 });
 
 const BrandTitle = styled.Text(({ theme }) => ({
