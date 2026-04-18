@@ -18,7 +18,7 @@ export const IconBadge = ({
 }: IconProps) => {
   return (
     <IconContainer $size={size} $bgColor={bgColor}>
-      <Symbol width={iconSize} height={iconSize} color={color} fill={color} />
+      <Symbol width={iconSize} height={iconSize} color={color} />
     </IconContainer>
   );
 };

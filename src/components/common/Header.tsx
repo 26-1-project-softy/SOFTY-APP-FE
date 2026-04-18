@@ -13,6 +13,7 @@ interface HeaderProps {
   actionIcon?: IconComponent;
   onBackPress?: () => void;
   onActionPress?: () => void;
+  isActionDisabled?: boolean;
   actionAccessibilityLabel?: string;
 }
 
@@ -23,6 +24,7 @@ export const Header = ({
   actionIcon,
   onBackPress,
   onActionPress,
+  isActionDisabled,
   actionAccessibilityLabel,
 }: HeaderProps) => {
   const navigate = useNavigation();
@@ -66,6 +68,7 @@ export const Header = ({
             <IconButton
               icon={actionIcon}
               variant="plain"
+              disabled={isActionDisabled}
               onPress={onActionPress}
               accessibilityLabel={actionAccessibilityLabel}
             />
@@ -79,7 +82,8 @@ export const Header = ({
 const HeaderContainer = styled.View(({ theme }) => ({
   flexDirection: 'row',
   alignItems: 'center',
-  padding: 16,
+  paddingHorizontal: 8,
+  paddingVertical: 16,
   backgroundColor: theme.colors.background.bg1,
   borderBottomWidth: 1,
   borderBottomColor: theme.colors.border.border1,
@@ -96,15 +100,18 @@ const HeaderTrailingGroup = styled.View({
   alignItems: 'center',
   marginLeft: 'auto',
   flexShrink: 0,
+  gap: 8,
 });
 
 const HeaderTitle = styled.Text(({ theme }) => ({
   ...theme.fonts.labelM,
   color: theme.colors.text.text1,
   flexShrink: 1,
+  marginLeft: 8,
 }));
 
 const HeaderMetadata = styled.View({
   flexDirection: 'row',
   alignItems: 'center',
+  marginRight: 8,
 });

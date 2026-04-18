@@ -1,6 +1,7 @@
 import styled from '@emotion/native';
 import { Pressable } from 'react-native';
-import { IconComponent } from '@/types/icon';
+import { useTheme } from '@emotion/react';
+import type { IconComponent } from '@/types/icon';
 
 type IconButtonVariant = 'primary' | 'ghost' | 'plain';
 
@@ -19,46 +20,51 @@ export const IconButton = ({
   onPress,
   accessibilityLabel,
 }: IconButtonProps) => {
+  const theme = useTheme();
+
+  const iconColor = disabled
+    ? theme.colors.text.text4
+    : variant === 'primary'
+      ? theme.colors.text.textW
+      : theme.colors.text.text1;
+
   return (
-    <ButtonContainer
-      $variant={variant}
-      disabled={disabled}
+    <Pressable
       onPress={onPress}
+      disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      android_ripple={{ color: 'rgba(0, 0, 0, 0.08)', radius: 26 }}
-      style={({ pressed }) => ({
-        opacity: pressed && !disabled ? 0.88 : 1,
-      })}
     >
-      <Icon width={24} height={24} color={getIconColor(variant, disabled)} />
-    </ButtonContainer>
+      {({ pressed }) => (
+        <ButtonContainer $variant={variant} $pressed={pressed} $disabled={disabled}>
+          <Icon color={iconColor} />
+        </ButtonContainer>
+      )}
+    </Pressable>
   );
 };
 
-const getIconColor = (variant: IconButtonVariant, disabled: boolean) => {
-  if (disabled) return '#808080';
-  if (variant === 'primary') return '#FFFFFF';
-  return '#000000';
-};
-
-const ButtonContainer = styled(Pressable)<{
+const ButtonContainer = styled.View<{
   $variant: IconButtonVariant;
-  disabled: boolean;
-}>(({ theme, $variant, disabled }) => ({
+  $pressed: boolean;
+  $disabled: boolean;
+}>(({ theme, $variant, $pressed, $disabled }) => ({
   width: 40,
   height: 40,
   borderRadius: 999,
+  borderWidth: $variant === 'ghost' ? 1 : 0,
+  borderColor: $variant === 'ghost' ? theme.colors.border.border1 : 'transparent',
+  overflow: 'hidden',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor:
-    $variant === 'plain'
-      ? 'transparent'
-      : disabled
-        ? theme.colors.background.bg1
-        : $variant === 'primary'
-          ? theme.colors.brand.primary
-          : $variant === 'ghost'
-            ? theme.colors.background.bg1
-            : 'transparent',
+  backgroundColor: $disabled
+    ? theme.colors.background.bg1
+    : $pressed && $variant !== 'primary'
+      ? theme.colors.background.bg5
+      : $variant === 'primary'
+        ? theme.colors.brand.primary
+        : $variant === 'ghost'
+          ? theme.colors.background.bg1
+          : 'transparent',
+  opacity: $pressed && !$disabled && $variant === 'primary' ? 0.85 : 1,
 }));

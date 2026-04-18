@@ -1,20 +1,48 @@
 import { apiClient, type ApiResponse } from '@/services/http';
 
-export interface KakaoTokenLoginRequest {
+export interface KakaoLoginRequest {
   kakaoAccessToken: string;
 }
 
-export interface KakaoTokenLoginData {
+export interface KakaoLoginData {
   accessToken: string;
   refreshToken: string;
+  registrationRequired: boolean;
+}
+
+export type Gender = 'M' | 'F';
+
+export interface SignUpRequest {
+  parentName: string;
+  studentName: string;
+  studentBirthday: string;
+  studentGender: Gender;
+  classCode: string;
+}
+
+export interface SignUpData {
+  userId: number;
+  role: string;
 }
 
 export const authApi = {
-  loginWithKakaoToken: async (payload: KakaoTokenLoginRequest) => {
-    const response = await apiClient.post<ApiResponse<KakaoTokenLoginData>>(
-      '/auth/kakao/token-login',
+  loginWithKakaoToken: async (payload: KakaoLoginRequest) => {
+    const response = await apiClient.post<ApiResponse<KakaoLoginData>>(
+      '/auth/kakao/login',
       payload
     );
+
+    return response.data.data;
+  },
+
+  signUpParent: async (payload: SignUpRequest) => {
+    const response = await apiClient.post<ApiResponse<SignUpData>>('/auth/parents/signup', payload);
+
+    return response.data.data;
+  },
+
+  deleteAccount: async () => {
+    const response = await apiClient.delete<ApiResponse<Record<string, never>>>('/users/me');
 
     return response.data.data;
   },

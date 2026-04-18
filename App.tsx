@@ -3,11 +3,14 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { RootNavigator } from '@/navigation/RootNavigator';
 import { AppProviders } from '@/providers/AppProviders';
-import { setupApiInterceptors } from '@/services/http';
+import { setUnauthorizedHandler, setupApiInterceptors } from '@/services/http';
+import { useAuthStore } from '@/stores/authStore';
 
 SplashScreen.preventAutoHideAsync();
 
 const App = () => {
+  const clearSession = useAuthStore(state => state.clearSession);
+
   const [loaded, error] = useFonts({
     PretendardRegular: require('@/assets/fonts/Pretendard-Regular.otf'),
     PretendardSemiBold: require('@/assets/fonts/Pretendard-SemiBold.otf'),
@@ -17,7 +20,14 @@ const App = () => {
 
   useEffect(() => {
     setupApiInterceptors();
-  }, []);
+    setUnauthorizedHandler(() => {
+      clearSession();
+    });
+
+    return () => {
+      setUnauthorizedHandler(null);
+    };
+  }, [clearSession]);
 
   useEffect(() => {
     if (loaded || error) {
