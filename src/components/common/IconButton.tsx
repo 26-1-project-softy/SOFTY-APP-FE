@@ -1,6 +1,7 @@
 import styled from '@emotion/native';
 import { Pressable, type PressableProps } from 'react-native';
 import { useTheme } from '@emotion/react';
+import { getButtonBackgroundColor } from '@/utils/getButtonBackgroundColor';
 import type { IconComponent } from '@/types/icon';
 
 type IconButtonVariant = 'primary' | 'ghost' | 'plain';
@@ -57,15 +58,10 @@ const ButtonContainer = styled.View<{
   overflow: 'hidden',
   alignItems: 'center',
   justifyContent: 'center',
-  backgroundColor: $disabled
-    ? theme.colors.background.bg1
-    : $pressed && $variant === 'primary'
-      ? theme.colors.background.brandHover
-      : $pressed && $variant !== 'primary'
-        ? theme.colors.background.bg5
-        : $variant === 'primary'
-          ? theme.colors.brand.primary
-          : $variant === 'ghost'
-            ? theme.colors.background.bg1
-            : 'transparent',
+  backgroundColor: getButtonBackgroundColor({
+    theme,
+    variant: $variant,
+    pressed: $pressed,
+    disabled: $disabled,
+  }),
 }));
