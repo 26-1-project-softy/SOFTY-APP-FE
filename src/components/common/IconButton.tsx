@@ -1,42 +1,41 @@
 import styled from '@emotion/native';
-import { Pressable } from 'react-native';
+import { Pressable, type PressableProps } from 'react-native';
 import { useTheme } from '@emotion/react';
 import type { IconComponent } from '@/types/icon';
 
 type IconButtonVariant = 'primary' | 'ghost' | 'plain';
 
-interface IconButtonProps {
+type IconButtonProps = {
   icon: IconComponent;
   variant: IconButtonVariant;
-  disabled?: boolean;
-  onPress?: () => void;
-  accessibilityLabel?: string;
-}
+  buttonSize?: number;
+} & Omit<PressableProps, 'children'>;
 
 export const IconButton = ({
   icon: Icon,
   variant,
   disabled = false,
-  onPress,
-  accessibilityLabel,
+  buttonSize = 40,
+  ...pressableProps
 }: IconButtonProps) => {
   const theme = useTheme();
+  const isDisabled = Boolean(disabled);
 
-  const iconColor = disabled
+  const iconColor = isDisabled
     ? theme.colors.text.text4
     : variant === 'primary'
       ? theme.colors.text.textW
       : theme.colors.text.text1;
 
   return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-    >
+    <Pressable {...pressableProps} disabled={isDisabled} accessibilityRole="button">
       {({ pressed }) => (
-        <ButtonContainer $variant={variant} $pressed={pressed} $disabled={disabled}>
+        <ButtonContainer
+          $variant={variant}
+          $size={buttonSize}
+          $pressed={pressed}
+          $disabled={isDisabled}
+        >
           <Icon color={iconColor} />
         </ButtonContainer>
       )}
@@ -46,11 +45,12 @@ export const IconButton = ({
 
 const ButtonContainer = styled.View<{
   $variant: IconButtonVariant;
+  $size: number;
   $pressed: boolean;
   $disabled: boolean;
-}>(({ theme, $variant, $pressed, $disabled }) => ({
-  width: 40,
-  height: 40,
+}>(({ theme, $variant, $size, $pressed, $disabled }) => ({
+  width: $size,
+  height: $size,
   borderRadius: 999,
   borderWidth: $variant === 'ghost' ? 1 : 0,
   borderColor: $variant === 'ghost' ? theme.colors.border.border1 : 'transparent',
@@ -59,12 +59,13 @@ const ButtonContainer = styled.View<{
   justifyContent: 'center',
   backgroundColor: $disabled
     ? theme.colors.background.bg1
-    : $pressed && $variant !== 'primary'
-      ? theme.colors.background.bg5
-      : $variant === 'primary'
-        ? theme.colors.brand.primary
-        : $variant === 'ghost'
-          ? theme.colors.background.bg1
-          : 'transparent',
-  opacity: $pressed && !$disabled && $variant === 'primary' ? 0.85 : 1,
+    : $pressed && $variant === 'primary'
+      ? theme.colors.background.brandHover
+      : $pressed && $variant !== 'primary'
+        ? theme.colors.background.bg5
+        : $variant === 'primary'
+          ? theme.colors.brand.primary
+          : $variant === 'ghost'
+            ? theme.colors.background.bg1
+            : 'transparent',
 }));
