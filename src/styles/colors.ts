@@ -48,9 +48,9 @@ export const colors = {
       border: '#6398E9',
     },
     request: {
-      text: '#7A35F0',
-      background: '#FAF5FF',
-      border: '#8B5CF6',
+      text: '#219900',
+      background: '#E7FFDE',
+      border: '#74C357',
     },
     inquiry: {
       text: '#7711D2',
