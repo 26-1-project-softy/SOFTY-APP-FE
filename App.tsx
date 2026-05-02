@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import { useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,7 +7,7 @@ import { AppProviders } from '@/providers/AppProviders';
 import { setUnauthorizedHandler, setupApiInterceptors } from '@/services/http';
 import { useAuthStore } from '@/stores/authStore';
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 
 const App = () => {
   const clearSession = useAuthStore(state => state.clearSession);
