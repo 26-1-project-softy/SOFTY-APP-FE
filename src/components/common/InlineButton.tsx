@@ -1,37 +1,39 @@
 import styled from '@emotion/native';
-import { Pressable, type DimensionValue } from 'react-native';
+import { Pressable, type DimensionValue, type PressableProps } from 'react-native';
 import { useTheme } from '@emotion/react';
+import { getButtonBackgroundColor } from '@/utils/getButtonBackgroundColor';
 import type { IconComponent } from '@/types/icon';
 
 type ButtonSize = 'M' | 'L';
 type ButtonVariant = 'primary' | 'ghost' | 'text';
 
-interface InlineButtonProps {
+type InlineButtonProps = {
   variant: ButtonVariant;
   size: ButtonSize;
   label: string;
   bgColor?: string;
+  activeBgColor?: string;
   color?: string;
   icon?: IconComponent;
   width?: DimensionValue;
-  disabled?: boolean;
-  onPress?: () => void;
-}
+} & Omit<PressableProps, 'children'>;
 
 export const InlineButton = ({
   variant,
   size,
   label,
   bgColor,
+  activeBgColor,
   color,
   icon: Icon,
   width,
   disabled = false,
-  onPress,
+  ...pressableProps
 }: InlineButtonProps) => {
   const theme = useTheme();
+  const isDisabled = Boolean(disabled);
 
-  const contentColor = disabled
+  const contentColor = isDisabled
     ? theme.colors.text.text4
     : color
       ? color
@@ -40,15 +42,16 @@ export const InlineButton = ({
         : theme.colors.text.text1;
 
   return (
-    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button">
+    <Pressable {...pressableProps} disabled={isDisabled} accessibilityRole="button">
       {({ pressed }) => (
         <ButtonContainer
           $size={size}
           $width={width}
           $variant={variant}
           $pressed={pressed}
-          $disabled={disabled}
+          $disabled={isDisabled}
           $bgColor={bgColor}
+          $activeBgColor={activeBgColor}
         >
           {Icon && <Icon color={contentColor} />}
           <ButtonLabel style={{ color: contentColor }}>{label}</ButtonLabel>
@@ -65,7 +68,8 @@ const ButtonContainer = styled.View<{
   $pressed: boolean;
   $disabled: boolean;
   $bgColor?: string;
-}>(({ theme, $size, $width, $variant, $pressed, $disabled, $bgColor }) => ({
+  $activeBgColor?: string;
+}>(({ theme, $size, $width, $variant, $pressed, $disabled, $bgColor, $activeBgColor }) => ({
   flexDirection: 'row',
   justifyContent: 'center',
   alignItems: 'center',
@@ -75,20 +79,16 @@ const ButtonContainer = styled.View<{
   borderRadius: 10,
   paddingHorizontal: 12,
   overflow: 'hidden',
-  backgroundColor: $disabled
-    ? theme.colors.background.bg5
-    : $pressed && $variant !== 'primary'
-      ? theme.colors.background.bg5
-      : $bgColor
-        ? $bgColor
-        : $variant === 'primary'
-          ? theme.colors.brand.primary
-          : $variant === 'ghost'
-            ? theme.colors.background.bg1
-            : 'transparent',
+  backgroundColor: getButtonBackgroundColor({
+    theme,
+    variant: $variant,
+    pressed: $pressed,
+    disabled: $disabled,
+    bgColor: $bgColor,
+    activeBgColor: $activeBgColor,
+  }),
   borderWidth: $variant === 'ghost' ? 1 : 0,
   borderColor: $variant === 'ghost' ? theme.colors.border.border1 : 'transparent',
-  opacity: $pressed && !$disabled && $variant !== 'text' ? 0.85 : 1,
 }));
 
 const ButtonLabel = styled.Text(({ theme }) => ({
