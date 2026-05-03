@@ -1,9 +1,12 @@
 import styled from '@emotion/native';
-import { useState } from 'react';
-import Checkbox from 'expo-checkbox';
-import { KeyboardAvoidingView, Platform } from 'react-native';
 import { useTheme } from '@emotion/react';
+import { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Checkbox from 'expo-checkbox';
 import { useInquiryForm } from '@/features/newInquiry/hooks/useInquiryForm';
+import { useTeacherWorkStatus } from '@/features/newInquiry/hooks/useTeacherWorkStatus';
 import { Header } from '@/components/common/Header';
 import { InquiryStepBar } from '@/components/newInquiry/InquiryStepBar';
 import { Alert } from '@/components/common/Alert';
@@ -12,10 +15,15 @@ import { SectionCard, SectionCardContent } from '@/components/common/SectionCard
 import { InlineButton } from '@/components/common/InlineButton';
 import { Tag } from '@/components/common/Tag';
 import { IntentSelectSheet } from '@/components/newInquiry/IntentSelectSheet';
+import type { MainStackParamList } from '@/types/navigation';
 import { IcPencil, IcSend, IcSparkles } from '@/assets/icons';
+import { MAIN_ROUTES } from '@/navigation/routes';
+
+type NewInquiryNavigationProp = NativeStackNavigationProp<MainStackParamList>;
 
 export const NewInquiryScreen = () => {
   const theme = useTheme();
+  const navigation = useNavigation<NewInquiryNavigationProp>();
 
   const {
     content,
@@ -25,11 +33,14 @@ export const NewInquiryScreen = () => {
     isAnalyzed,
     isIntentConfirmed,
     setIsIntentConfirmed,
-    isTeacherOff,
+    isAnalyzingIntent,
+    isSubmittingInquiry,
     handleAnalyzeIntent,
     resetAnalysis,
     handleSubmit,
   } = useInquiryForm();
+
+  const { isTeacherOff } = useTeacherWorkStatus();
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -38,6 +49,16 @@ export const NewInquiryScreen = () => {
   const handlePressBackToMessageInput = () => {
     resetAnalysis();
     setIsSheetOpen(false);
+  };
+
+  const handlePressSubmit = async () => {
+    const result = await handleSubmit();
+
+    if (!result) return;
+
+    navigation.replace(MAIN_ROUTES.THREAD_DETAIL, {
+      chatRoomId: result.chatRoomId,
+    });
   };
 
   return (
@@ -112,7 +133,7 @@ export const NewInquiryScreen = () => {
                 size="L"
                 icon={IcSparkles}
                 label="AI 의도 분석하기"
-                disabled={!content.trim()}
+                disabled={!content.trim() || isAnalyzingIntent}
                 onPress={handleAnalyzeIntent}
               />
             ) : (
@@ -121,8 +142,8 @@ export const NewInquiryScreen = () => {
                 size="L"
                 icon={IcSend}
                 label="전송"
-                disabled={isSubmitDisabled}
-                onPress={handleSubmit}
+                disabled={isSubmitDisabled || isSubmittingInquiry}
+                onPress={handlePressSubmit}
               />
             )}
           </NewInquiryContentContainer>

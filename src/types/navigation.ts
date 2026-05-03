@@ -9,7 +9,7 @@ export type AuthStackParamList = {
 export type MainStackParamList = {
   [MAIN_ROUTES.THREAD_LIST]: undefined;
   [MAIN_ROUTES.THREAD_DETAIL]: {
-    threadId: string;
+    chatRoomId: number;
   };
   [MAIN_ROUTES.NEW_INQUIRY]: undefined;
   [MAIN_ROUTES.SETTINGS]: undefined;
