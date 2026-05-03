@@ -39,6 +39,7 @@ export const colors = {
     warningSoft: '#FEFBEC',
     error: '#FF2C3D',
     errorSoft: '#FAE3E2',
+    errorPressed: '#E62636',
   },
   intent: {
     attendance: {
