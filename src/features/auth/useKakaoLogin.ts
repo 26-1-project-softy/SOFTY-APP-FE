@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { login } from '@react-native-seoul/kakao-login';
-import { setAccessToken as setHttpAccessToken } from '@/services/http';
-import { getAuthErrorMessage } from '@/features/auth/getAuthErrorMessage';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 import { authApi } from '@/services/auth/authApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
@@ -9,7 +8,7 @@ import { useToastStore } from '@/stores/toastStore';
 const KAKAO_LOGIN_ERROR_MESSAGE = '카카오 로그인 중 오류가 발생했어요. 다시 시도해 주세요.';
 
 const getKakaoLoginErrorMessage = (error: unknown): string | null => {
-  const message = getAuthErrorMessage(error, '');
+  const message = getErrorMessage(error, '');
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes('cancel')) {
@@ -46,8 +45,6 @@ export const useKakaoLogin = () => {
         kakaoAccessToken: kakaoToken.accessToken,
       });
 
-      setHttpAccessToken(loginData.accessToken);
-
       if (loginData.registrationRequired) {
         setSignupRequired({
           accessToken: loginData.accessToken,
@@ -66,10 +63,6 @@ export const useKakaoLogin = () => {
 
       if (toastMessage) {
         showToast(toastMessage, 'error');
-      }
-
-      if (__DEV__) {
-        console.log('카카오 로그인 실패', error);
       }
     } finally {
       setIsKakaoLoginLoading(false);

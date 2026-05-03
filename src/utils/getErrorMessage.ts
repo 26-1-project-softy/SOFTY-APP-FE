@@ -1,4 +1,4 @@
-export const getAuthErrorMessage = (error: unknown, fallbackMessage: string): string => {
+export const getErrorMessage = (error: unknown, fallbackMessage: string): string => {
   if (error instanceof Error) {
     return error.message.trim() || fallbackMessage;
   }

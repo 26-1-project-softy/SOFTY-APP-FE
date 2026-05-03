@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query';
-import { authApi, type SignUpRequest } from '@/services/auth/authApi';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 import type { ApiError } from '@/services/http';
+import { authApi, type SignUpRequest } from '@/services/auth/authApi';
 import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
-import { getAuthErrorMessage } from '@/features/auth/getAuthErrorMessage';
 
 const SIGN_UP_ERROR_MESSAGE = '학급 참여 중 오류가 발생했어요. 다시 시도해 주세요.';
 const INVALID_CLASS_CODE_MESSAGE = '존재하지 않는 학급이에요. 학급 코드를 다시 확인해 주세요.';
@@ -30,7 +30,7 @@ const getSignUpErrorMessage = (error: unknown) => {
     return message;
   }
 
-  return getAuthErrorMessage(error, SIGN_UP_ERROR_MESSAGE);
+  return getErrorMessage(error, SIGN_UP_ERROR_MESSAGE);
 };
 
 export const useSignUpSubmit = () => {

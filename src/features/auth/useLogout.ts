@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { logout as logoutFromKakao } from '@react-native-seoul/kakao-login';
-import { getAuthErrorMessage } from '@/features/auth/getAuthErrorMessage';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 import { useResetAuthSession } from '@/features/auth/useResetAuthSession';
 import { useToastStore } from '@/stores/toastStore';
 
@@ -9,7 +9,7 @@ const LOGOUT_ERROR_MESSAGE = '카카오 로그아웃에 실패했어요.';
 const MISSING_TOKEN_ERROR_MESSAGE = '로그아웃할 수 없는 상태예요.';
 
 const getLogoutErrorMessage = (error: unknown) => {
-  const message = getAuthErrorMessage(error, '');
+  const message = getErrorMessage(error, '');
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes("tokens don't exist")) {
