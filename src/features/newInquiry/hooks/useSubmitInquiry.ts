@@ -1,17 +1,26 @@
-import type { InquiryIntentType } from '@/constants/inquiryIntent';
+import { useMutation } from '@tanstack/react-query';
+import { newInquiryApi } from '@/services/newInquiryApi';
+import { INQUIRY_INTENT_LABEL, type InquiryIntentType } from '@/constants/inquiryIntent';
 
-interface Params {
+type SubmitInquiryParams = {
   content: string;
   selectedIntent: InquiryIntentType;
-}
+};
 
 export const useSubmitInquiry = () => {
-  // TODO: 문의 전송 API 연동 후 useMutation 기반으로 교체
-  const submitInquiry = ({ content, selectedIntent }: Params) => {
-    if (__DEV__) {
-      console.log('문의 전송 요청', { content, selectedIntent });
-    }
-  };
+  const submitInquiryMutation = useMutation({
+    mutationFn: ({ content, selectedIntent }: SubmitInquiryParams) => {
+      const payload = {
+        content,
+        intentLabel: INQUIRY_INTENT_LABEL[selectedIntent],
+      };
 
-  return { submitInquiry };
+      return newInquiryApi.sendInitialInquiry(payload);
+    },
+  });
+
+  return {
+    submitInquiry: submitInquiryMutation.mutateAsync,
+    isSubmittingInquiry: submitInquiryMutation.isPending,
+  };
 };

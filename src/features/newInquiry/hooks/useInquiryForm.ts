@@ -1,23 +1,34 @@
 import { useInquiryFormState } from './useInquiryFormState';
 import { useAnalyzeIntent } from './useAnalyzeIntent';
 import { useSubmitInquiry } from './useSubmitInquiry';
+import { getInquiryIntentByLabel } from '@/features/newInquiry/utils/getInquiryIntentByLabel';
+import { getErrorMessage } from '@/utils/getErrorMessage';
+import { useToastStore } from '@/stores/toastStore';
 import { INQUIRY_INTENT } from '@/constants/inquiryIntent';
+
+const ANALYZE_INTENT_ERROR_MESSAGE = 'AI 의도 분석 중 오류가 발생했어요. 다시 시도해 주세요.';
+const SUBMIT_INQUIRY_ERROR_MESSAGE = '문의 전송 중 오류가 발생했어요. 다시 시도해 주세요.';
 
 export const useInquiryForm = () => {
   const state = useInquiryFormState();
-  const { analyzeIntent } = useAnalyzeIntent();
-  const { submitInquiry } = useSubmitInquiry();
+  const showToast = useToastStore(state => state.showToast);
+  const { analyzeIntent, isAnalyzingIntent } = useAnalyzeIntent();
+  const { submitInquiry, isSubmittingInquiry } = useSubmitInquiry();
 
-  const handleAnalyzeIntent = () => {
-    if (!state.content.trim()) return;
+  const handleAnalyzeIntent = async () => {
+    if (!state.content.trim() || isAnalyzingIntent) return;
 
-    analyzeIntent({
-      content: state.content,
-      setSelectedIntent: state.setSelectedIntent,
-      setIsAnalyzed: state.setIsAnalyzed,
-    });
+    try {
+      const result = await analyzeIntent({
+        content: state.content,
+      });
 
-    state.setIsIntentConfirmed(false);
+      state.setSelectedIntent(getInquiryIntentByLabel(result.intentLabel));
+      state.setIsAnalyzed(true);
+      state.setIsIntentConfirmed(false);
+    } catch (error) {
+      showToast(getErrorMessage(error, ANALYZE_INTENT_ERROR_MESSAGE), 'error');
+    }
   };
 
   const resetAnalysis = () => {
@@ -26,18 +37,29 @@ export const useInquiryForm = () => {
     state.setSelectedIntent(INQUIRY_INTENT.INQUIRY);
   };
 
-  const handleSubmit = () => {
-    submitInquiry({
-      content: state.content,
-      selectedIntent: state.selectedIntent,
-    });
-  };
+  const handleSubmit = async () => {
+    if (!state.content.trim() || !state.isIntentConfirmed || isSubmittingInquiry) return null;
 
-  const isTeacherOff = true;
+    try {
+      const result = await submitInquiry({
+        content: state.content,
+        selectedIntent: state.selectedIntent,
+      });
+
+      showToast('문의가 전송됐어요.', 'success');
+
+      return result;
+    } catch (error) {
+      showToast(getErrorMessage(error, SUBMIT_INQUIRY_ERROR_MESSAGE), 'error');
+
+      return null;
+    }
+  };
 
   return {
     ...state,
-    isTeacherOff,
+    isAnalyzingIntent,
+    isSubmittingInquiry,
     handleAnalyzeIntent,
     resetAnalysis,
     handleSubmit,
