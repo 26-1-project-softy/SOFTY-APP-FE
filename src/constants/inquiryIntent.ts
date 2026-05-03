@@ -1,22 +1,27 @@
+import type { ColorsType } from '@/styles/colors';
+
 export const INQUIRY_INTENT = {
-  ABSENCE_LATE: 'ABSENCE_LATE',
+  ATTENDANCE: 'ATTENDANCE',
   COUNSELING: 'COUNSELING',
   REQUEST: 'REQUEST',
   INQUIRY: 'INQUIRY',
+  ETC: 'ETC',
 } as const;
 
 export type InquiryIntentType = (typeof INQUIRY_INTENT)[keyof typeof INQUIRY_INTENT];
 
 export const INQUIRY_INTENT_LABEL: Record<InquiryIntentType, string> = {
-  ABSENCE_LATE: '결석/지각',
+  ATTENDANCE: '출결',
   COUNSELING: '상담',
   REQUEST: '요청',
   INQUIRY: '문의',
+  ETC: '기타',
 };
 
-export const INQUIRY_INTENT_COLOR_KEY = {
-  ABSENCE_LATE: 'absenceLate',
+export const INQUIRY_INTENT_COLOR_KEY: Record<InquiryIntentType, keyof ColorsType['intent']> = {
+  ATTENDANCE: 'attendance',
   COUNSELING: 'counseling',
   REQUEST: 'request',
   INQUIRY: 'inquiry',
-} as const;
+  ETC: 'etc',
+};

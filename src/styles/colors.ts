@@ -41,7 +41,7 @@ export const colors = {
     errorSoft: '#FAE3E2',
   },
   intent: {
-    absenceLate: {
+    attendance: {
       text: '#BA420D',
       background: '#FCEDD7',
       border: '#E5AE65',
@@ -60,6 +60,11 @@ export const colors = {
       text: '#7711D2',
       background: '#F1E8FD',
       border: '#AB79EE',
+    },
+    etc: {
+      text: '#4A5567',
+      background: '#F2F5F9',
+      border: '#ADB5C1',
     },
   },
   threadStatus: {

@@ -10,10 +10,11 @@ import { Tag } from '@/components/common/Tag';
 import { INQUIRY_INTENT, type InquiryIntentType } from '@/constants/inquiryIntent';
 
 const INTENT_LIST: InquiryIntentType[] = [
-  INQUIRY_INTENT.ABSENCE_LATE,
+  INQUIRY_INTENT.ATTENDANCE,
   INQUIRY_INTENT.COUNSELING,
   INQUIRY_INTENT.REQUEST,
   INQUIRY_INTENT.INQUIRY,
+  INQUIRY_INTENT.ETC,
 ];
 
 interface Props {
