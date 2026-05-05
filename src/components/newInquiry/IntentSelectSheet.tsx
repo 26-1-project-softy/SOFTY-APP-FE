@@ -106,7 +106,9 @@ const IntentOptionList = styled.View({
   gap: 10,
 });
 
-const IntentOptionButton = styled.Pressable<{ $active: boolean }>(({ $active }) => ({
+const IntentOptionButton = styled.Pressable<{ $active: boolean }>(({ theme, $active }) => ({
   borderRadius: 999,
-  opacity: $active ? 1 : 0.5,
+  borderWidth: 2,
+  borderColor: $active ? theme.colors.brand.primary : 'transparent',
+  padding: 1,
 }));
