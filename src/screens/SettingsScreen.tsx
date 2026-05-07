@@ -115,6 +115,7 @@ export const SettingsScreen = () => {
                 size="L"
                 label="탈퇴하기"
                 bgColor={theme.colors.semantic.error}
+                activeBgColor={theme.colors.semantic.errorPressed}
                 color={theme.colors.text.textW}
                 disabled={isDeleteAccountLoading}
                 onPress={handleConfirmDeleteAccount}

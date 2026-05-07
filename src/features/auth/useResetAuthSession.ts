@@ -1,4 +1,3 @@
-import { clearAccessToken } from '@/services/http';
 import { queryClient } from '@/providers/queryClient';
 import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
@@ -8,7 +7,6 @@ export const useResetAuthSession = () => {
   const clearToasts = useToastStore(state => state.clearToasts);
 
   const resetAuthSession = () => {
-    clearAccessToken();
     queryClient.clear();
     clearToasts();
     clearSession();

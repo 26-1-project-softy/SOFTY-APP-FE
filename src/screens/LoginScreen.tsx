@@ -1,4 +1,5 @@
 import styled from '@emotion/native';
+import { useTheme } from '@emotion/react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { InlineButton } from '@/components/common/InlineButton';
 import { IconBadge } from '@/components/common/IconBadge';
@@ -6,7 +7,6 @@ import { useKakaoLogin } from '@/features/auth/useKakaoLogin';
 import { IcBrandLogo, IcKakao, IcLink, IcSparkles } from '@/assets/icons';
 import { BADGE_BG_BRAND, BADGE_ICON_BRAND } from '@/constants/iconBadge';
 
-const KAKAO_YELLOW = '#FEE500';
 const COPYRIGHT_TEXT = '© 2026, SOFTY All rights reserved.';
 
 const loginFeatureList = [
@@ -25,6 +25,7 @@ const loginFeatureList = [
 ] as const;
 
 export const LoginScreen = () => {
+  const theme = useTheme();
   const { isKakaoLoginLoading, handleKakaoLogin } = useKakaoLogin();
 
   return (
@@ -63,8 +64,9 @@ export const LoginScreen = () => {
               variant="primary"
               size="L"
               label="카카오로 로그인"
-              bgColor={KAKAO_YELLOW}
-              color="#000000"
+              bgColor={theme.colors.kakao.primary}
+              activeBgColor={theme.colors.kakao.active}
+              color={theme.colors.text.text1}
               icon={IcKakao}
               disabled={isKakaoLoginLoading}
               onPress={handleKakaoLogin}

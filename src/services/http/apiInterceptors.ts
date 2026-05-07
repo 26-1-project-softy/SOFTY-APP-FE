@@ -1,6 +1,7 @@
 import type { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type { ApiResponse } from './apiClient';
 import { apiClient } from './apiClient';
+import { useAuthStore } from '@/stores/authStore';
 
 export interface ApiError<T = unknown> {
   httpStatus?: number;
@@ -10,17 +11,8 @@ export interface ApiError<T = unknown> {
   originalError?: unknown;
 }
 
-let accessToken: string | null = null;
 let isApiInterceptorsSetup = false;
 let unauthorizedHandler: (() => void) | null = null;
-
-export const setAccessToken = (token: string | null) => {
-  accessToken = token;
-};
-
-export const clearAccessToken = () => {
-  accessToken = null;
-};
 
 export const setUnauthorizedHandler = (handler: (() => void) | null) => {
   unauthorizedHandler = handler;
@@ -43,6 +35,8 @@ const createApiError = <T>({
 };
 
 const handleRequest = (config: InternalAxiosRequestConfig) => {
+  const accessToken = useAuthStore.getState().accessToken;
+
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
@@ -80,7 +74,6 @@ const handleResponseError = (error: AxiosError<ApiResponse<unknown>>) => {
   const httpStatus = error.response?.status;
 
   if (httpStatus === 401) {
-    clearAccessToken();
     unauthorizedHandler?.();
   }
 
