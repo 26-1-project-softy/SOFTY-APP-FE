@@ -5,8 +5,8 @@ type IconProps = {
   symbol: IconComponent;
   size?: number;
   iconSize?: number;
-  bgColor?: string;
-  color?: string;
+  bgColor: string;
+  color: string;
 };
 
 export const IconBadge = ({
