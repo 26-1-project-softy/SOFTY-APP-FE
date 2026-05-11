@@ -58,6 +58,7 @@ const ButtonContainer = styled.View<{
   overflow: 'hidden',
   alignItems: 'center',
   justifyContent: 'center',
+  flexShrink: 0,
   backgroundColor: getButtonBackgroundColor({
     theme,
     variant: $variant,
