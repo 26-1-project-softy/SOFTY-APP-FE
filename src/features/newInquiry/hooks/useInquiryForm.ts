@@ -5,6 +5,8 @@ import { getInquiryIntentByLabel } from '@/features/newInquiry/utils/getInquiryI
 import { getErrorMessage } from '@/utils/getErrorMessage';
 import { useToastStore } from '@/stores/toastStore';
 import { INQUIRY_INTENT } from '@/constants/inquiryIntent';
+import { queryClient } from '@/providers/queryClient';
+import { QUERY_KEYS } from '@/constants/queryKeys';
 
 const ANALYZE_INTENT_ERROR_MESSAGE = 'AI 의도 분석 중 오류가 발생했어요. 다시 시도해 주세요.';
 const SUBMIT_INQUIRY_ERROR_MESSAGE = '문의 전송 중 오류가 발생했어요. 다시 시도해 주세요.';
@@ -44,6 +46,10 @@ export const useInquiryForm = () => {
       const result = await submitInquiry({
         content: state.content,
         selectedIntent: state.selectedIntent,
+      });
+
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.threadList,
       });
 
       showToast('문의가 전송됐어요.', 'success');
