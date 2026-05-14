@@ -41,3 +41,23 @@ export const formatMessagePreviewDateTime = (dateText: string) => {
 
   return `${year}.${month}.${day}`;
 };
+
+export const formatChatMessageDateTime = (dateText: string) => {
+  const date = new Date(dateText);
+
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours < 12 ? '오전' : '오후';
+  const displayHours = hours % 12 || 12;
+  const displayMinutes = String(minutes).padStart(2, '0');
+
+  return `${year}.${month}.${day} ${period} ${displayHours}:${displayMinutes}`;
+};
