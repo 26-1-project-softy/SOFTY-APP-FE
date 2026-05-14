@@ -62,6 +62,7 @@ const SectionCardHeader = styled.View({
 const SectionCardTextArea = styled.View({
   flex: 1,
   minWidth: 0,
+  gap: 4,
 });
 
 const SectionCardTitleRow = styled.View({
