@@ -10,7 +10,7 @@ type TextAreaProps = {
 export const TextArea = ({
   editable = true,
   minHeight = 140,
-  maxHeight,
+  maxHeight = 200,
   ...textInputProps
 }: TextAreaProps) => {
   const theme = useTheme();
@@ -31,10 +31,12 @@ export const TextArea = ({
 const TextAreaInput = styled.TextInput<{
   $editable: boolean;
   $minHeight: number;
-  $maxHeight?: number;
+  $maxHeight: number;
 }>(({ theme, $editable, $minHeight, $maxHeight }) => ({
+  flex: 1,
   textAlignVertical: 'top',
-  minHeight: 140,
+  minHeight: $minHeight,
+  maxHeight: $maxHeight,
   ...theme.fonts.body2,
   color: theme.colors.text.text1,
   backgroundColor: $editable ? theme.colors.background.bg1 : theme.colors.background.bg3,
