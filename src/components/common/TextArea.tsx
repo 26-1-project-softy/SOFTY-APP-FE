@@ -2,9 +2,17 @@ import styled from '@emotion/native';
 import { useTheme } from '@emotion/react';
 import type { TextInputProps } from 'react-native';
 
-type TextAreaProps = Omit<TextInputProps, 'multiline'>;
+type TextAreaProps = {
+  minHeight?: number;
+  maxHeight?: number;
+} & Omit<TextInputProps, 'multiline'>;
 
-export const TextArea = ({ editable = true, ...textInputProps }: TextAreaProps) => {
+export const TextArea = ({
+  editable = true,
+  minHeight = 140,
+  maxHeight = 200,
+  ...textInputProps
+}: TextAreaProps) => {
   const theme = useTheme();
 
   return (
@@ -12,15 +20,23 @@ export const TextArea = ({ editable = true, ...textInputProps }: TextAreaProps) 
       multiline
       editable={editable}
       $editable={editable}
+      $minHeight={minHeight}
+      $maxHeight={maxHeight}
       placeholderTextColor={theme.colors.text.text4}
       {...textInputProps}
     />
   );
 };
 
-const TextAreaInput = styled.TextInput<{ $editable: boolean }>(({ theme, $editable }) => ({
+const TextAreaInput = styled.TextInput<{
+  $editable: boolean;
+  $minHeight: number;
+  $maxHeight: number;
+}>(({ theme, $editable, $minHeight, $maxHeight }) => ({
+  flex: 1,
   textAlignVertical: 'top',
-  minHeight: 140,
+  minHeight: $minHeight,
+  maxHeight: $maxHeight,
   ...theme.fonts.body2,
   color: theme.colors.text.text1,
   backgroundColor: $editable ? theme.colors.background.bg1 : theme.colors.background.bg3,

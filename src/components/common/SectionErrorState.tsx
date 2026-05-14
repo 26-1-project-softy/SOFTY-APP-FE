@@ -1,7 +1,7 @@
 import styled from '@emotion/native';
 import { useTheme } from '@emotion/react';
 import { InlineButton } from '@/components/common/InlineButton';
-import { IcError } from '@/assets/icons';
+import { IcError, IcRefresh } from '@/assets/icons';
 
 type SectionErrorStateProps = {
   title?: string;
@@ -25,7 +25,13 @@ export const SectionErrorState = ({
       <SectionErrorTitle>{title}</SectionErrorTitle>
       <SectionErrorDescription>{description}</SectionErrorDescription>
 
-      <InlineButton variant="primary" size="L" label="다시 시도" onPress={onRetry} />
+      <InlineButton
+        variant="primary"
+        size="L"
+        icon={IcRefresh}
+        label="다시 시도"
+        onPress={onRetry}
+      />
     </SectionErrorStateContainer>
   );
 };

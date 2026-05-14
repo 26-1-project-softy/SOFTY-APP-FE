@@ -21,7 +21,8 @@ export const colors = {
     bg3: '#F2F2F2',
     bg4: '#F2FDFA',
     bg5: '#E6E6E6',
-    bg6: '#808080',
+    bg6: '#E2EBE6',
+    bg7: '#808080',
     brandHover: '#32A6A1',
   },
   border: {

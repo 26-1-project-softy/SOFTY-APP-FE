@@ -12,14 +12,21 @@ const config: ExpoConfig = {
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
+  },
+  updates: {
+    url: 'https://u.expo.dev/e05325b4-ef41-423c-921e-712d2d1b0631',
   },
   android: {
     package: 'com.softy.parent',
+    softwareKeyboardLayoutMode: 'resize',
+    runtimeVersion: '1.0.0',
     adaptiveIcon: {
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#FFFFFF',
     },
-    edgeToEdgeEnabled: true,
   },
   web: {
     favicon: './assets/favicon.png',
