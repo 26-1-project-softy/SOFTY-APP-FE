@@ -9,7 +9,7 @@ import { useInquiryForm } from '@/features/newInquiry/hooks/useInquiryForm';
 import { useTeacherWorkStatus } from '@/features/newInquiry/hooks/useTeacherWorkStatus';
 import { Header } from '@/components/common/Header';
 import { InquiryStepBar } from '@/components/newInquiry/InquiryStepBar';
-import { Alert } from '@/components/common/Alert';
+import { TeacherOffNotice } from '@/components/common/TeacherOffNotice';
 import { TextArea } from '@/components/common/TextArea';
 import { SectionCard, SectionCardContent } from '@/components/common/SectionCard';
 import { InlineButton } from '@/components/common/InlineButton';
@@ -77,13 +77,7 @@ export const NewInquiryScreen = () => {
       >
         <NewInquiryScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
           <NewInquiryContentContainer>
-            {isTeacherOff && (
-              <Alert
-                variant="warning"
-                title="현재는 선생님 근무시간이 아니에요"
-                description="메시지는 전송되지만, 확인 및 답변은 다음 근무시간에 이뤄질 수 있어요."
-              />
-            )}
+            {isTeacherOff && <TeacherOffNotice />}
 
             <TextArea
               value={content}
