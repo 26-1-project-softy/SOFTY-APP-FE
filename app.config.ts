@@ -12,6 +12,9 @@ const config: ExpoConfig = {
   newArchEnabled: true,
   ios: {
     supportsTablet: true,
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
   },
   updates: {
     url: 'https://u.expo.dev/e05325b4-ef41-423c-921e-712d2d1b0631',
