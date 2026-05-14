@@ -10,7 +10,7 @@ import { useTeacherWorkStatus } from '@/features/newInquiry/hooks/useTeacherWork
 import { Header } from '@/components/common/Header';
 import { InquiryStepBar } from '@/components/newInquiry/InquiryStepBar';
 import { Alert } from '@/components/common/Alert';
-import { TextArea } from '@/components/newInquiry/TextArea';
+import { TextArea } from '@/components/common/TextArea';
 import { SectionCard, SectionCardContent } from '@/components/common/SectionCard';
 import { InlineButton } from '@/components/common/InlineButton';
 import { Tag } from '@/components/common/Tag';
