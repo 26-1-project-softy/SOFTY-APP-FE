@@ -1,7 +1,7 @@
 import styled from '@emotion/native';
 import { useTheme } from '@emotion/react';
 import { IconBadge } from '@/components/common/IconBadge';
-import type { ThreadMessageItem } from '@/features/threadDetail/queries/useThreadMessages';
+import type { ThreadMessageItem } from '@/features/threadDetail/types';
 import { IcDefaultProfile } from '@/assets/icons';
 
 type MessageItemProps = {
