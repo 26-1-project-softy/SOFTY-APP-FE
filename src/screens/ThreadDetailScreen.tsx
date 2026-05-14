@@ -44,6 +44,8 @@ export const ThreadDetailScreen = () => {
   const [message, setMessage] = useState('');
   const messageListRef = useRef<FlatList<ThreadMessageItem>>(null);
 
+  const [isKeyboardAvoidingEnabled, setIsKeyboardAvoidingEnabled] = useState(false);
+
   const { isTeacherOff } = useTeacherWorkStatus();
 
   const {
@@ -134,7 +136,7 @@ export const ThreadDetailScreen = () => {
         }
       />
 
-      <KeyboardAvoidingContainer behavior="padding">
+      <KeyboardAvoidingContainer behavior="padding" enabled={isKeyboardAvoidingEnabled}>
         <ThreadDetailContent>
           {isError ? (
             <SectionErrorState title="채팅방을 불러오지 못했어요" onRetry={handleRefresh} />
@@ -195,6 +197,12 @@ export const ThreadDetailScreen = () => {
               canSend={canSendMessage}
               onChangeText={setMessage}
               onPressSend={handlePressSend}
+              onFocusInput={() => {
+                setIsKeyboardAvoidingEnabled(true);
+              }}
+              onBlurInput={() => {
+                setIsKeyboardAvoidingEnabled(false);
+              }}
             />
           )}
         </ThreadDetailContent>
