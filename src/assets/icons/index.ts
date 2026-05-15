@@ -1,5 +1,6 @@
 export { default as IcBack } from './ic-back.svg';
 export { default as IcBrandLogo } from './ic-brand-logo.svg';
+export { default as IcCalendar } from './ic-calendar.svg';
 export { default as IcChange } from './ic-change.svg';
 export { default as IcChat } from './ic-chat.svg';
 export { default as IcCheck } from './ic-check.svg';
@@ -17,3 +18,4 @@ export { default as IcRefresh } from './ic-refresh.svg';
 export { default as IcSend } from './ic-send.svg';
 export { default as IcSettings } from './ic-settings.svg';
 export { default as IcSparkles } from './ic-sparkles.svg';
+export { default as IcWarning } from './ic-warning.svg';
