@@ -70,7 +70,7 @@ const DialogCard = styled(Pressable)(({ theme }) => ({
 
 const DialogContentSection = styled.View({
   alignItems: 'center',
-  gap: 24,
+  gap: 16,
 });
 
 const DialogTitle = styled.Text(({ theme }) => ({
