@@ -1,165 +1,151 @@
 import styled from '@emotion/native';
-import { Pressable } from 'react-native';
+import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/common/Header';
-import { SettingsSectionCard } from '@/components/settings/SettingsSectionCard';
-import { Dialog } from '@/components/settings/Dialog';
-import { IconBadge } from '@/components/common/IconBadge';
-import { InlineButton } from '@/components/common/InlineButton';
+import { Loader } from '@/components/common/Loader';
+import { SectionErrorState } from '@/components/common/SectionErrorState';
+import { ProfileInfoCard } from '@/components/settings/ProfileInfoCard';
+import { ClassManagementCard } from '@/components/settings/ClassManagementCard';
+import { TeacherScheduleCard } from '@/components/settings/TeacherScheduleCard';
+import { AccountManagementCard } from '@/components/settings/AccountManagementCard';
+import { ClassCodeDialog } from '@/components/settings/ClassCodeDialog';
+import { ClassChangeConfirmDialog } from '@/components/settings/ClassChangeConfirmDialog';
+import { DeleteAccountDialog } from '@/components/settings/DeleteAccountDialog';
 import { useLogout } from '@/features/auth/useLogout';
-import { useDeleteAccount } from '@/features/auth/useDeleteAccount';
-import { useState } from 'react';
-import { useTheme } from '@emotion/react';
-import { IcError } from '@/assets/icons';
+import { useParentSetting } from '@/hooks/useParentSetting';
+import { useClassChangeFlow, useDeleteAccountFlow } from '@/features/settings/hooks';
 
 export const SettingsScreen = () => {
-  const theme = useTheme();
-  const [isDeleteAccountDialogVisible, setIsDeleteAccountDialogVisible] = useState(false);
+  const {
+    parentSetting,
+    classLabel,
+    studentName,
+    teacherName,
+    schedules,
+    isParentSettingLoading,
+    isParentSettingError,
+    refetchParentSetting,
+  } = useParentSetting();
+
+  const {
+    classCode,
+    classPreview,
+    classCodeErrorMessage,
+    classChangeErrorMessage,
+    isClassCodeDialogVisible,
+    isClassConfirmDialogVisible,
+    isClassChangeLoading,
+    isChangingClass,
+    isClassCodeSubmitDisabled,
+    handleOpenClassCodeDialog,
+    handleCloseClassCodeDialog,
+    handleChangeClassCode,
+    handlePreviewClassChange,
+    handleCloseClassConfirmDialog,
+    handleConfirmClassChange,
+  } = useClassChangeFlow({
+    onChanged: () => {
+      void refetchParentSetting();
+    },
+  });
 
   const { isLogoutLoading, handleLogout } = useLogout();
-  const { isDeleteAccountLoading, handleDeleteAccount } = useDeleteAccount();
+
+  const {
+    isDeleteAccountDialogVisible,
+    isDeleteAccountLoading,
+    handleOpenDeleteAccountDialog,
+    handleCloseDeleteAccountDialog,
+    handleConfirmDeleteAccount,
+  } = useDeleteAccountFlow({
+    isDisabled: isLogoutLoading,
+  });
 
   const isAccountActionDisabled = isLogoutLoading || isDeleteAccountLoading;
 
-  const handleOpenDeleteAccountDialog = () => {
-    if (isAccountActionDisabled) return;
+  if (isParentSettingLoading) {
+    return (
+      <SettingsScreenContainer edges={['bottom']}>
+        <Header hasBackBtn title="설정" />
+        <Loader />
+      </SettingsScreenContainer>
+    );
+  }
 
-    setIsDeleteAccountDialogVisible(true);
-  };
-
-  const handleCloseDeleteAccountDialog = () => {
-    if (isDeleteAccountLoading) return;
-
-    setIsDeleteAccountDialogVisible(false);
-  };
-
-  const handleConfirmDeleteAccount = async () => {
-    const isDeleted = await handleDeleteAccount();
-
-    if (isDeleted) {
-      setIsDeleteAccountDialogVisible(false);
-    }
-  };
+  if (isParentSettingError || !parentSetting) {
+    return (
+      <SettingsScreenContainer edges={['bottom']}>
+        <Header hasBackBtn title="설정" />
+        <SectionErrorState
+          title="설정 정보를 불러오지 못했어요"
+          onRetry={() => {
+            void refetchParentSetting();
+          }}
+        />
+      </SettingsScreenContainer>
+    );
+  }
 
   return (
-    <SafeAreaView edges={['bottom']}>
+    <SettingsScreenContainer edges={['bottom']}>
       <Header hasBackBtn title="설정" />
 
-      <SettingsContentContainer>
-        <SettingsSectionCard title="계정 관리">
-          <AccountActionList>
-            <Pressable
-              onPress={handleLogout}
-              disabled={isAccountActionDisabled}
-              accessibilityRole="button"
-              accessibilityLabel="로그아웃"
-            >
-              {({ pressed }) => (
-                <AccountActionButton $pressed={pressed}>
-                  <AccountActionLabel $pressed={pressed} $isDestructive={false}>
-                    로그아웃
-                  </AccountActionLabel>
-                </AccountActionButton>
-              )}
-            </Pressable>
+      <SettingsScrollView
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20, gap: 16 }}
+      >
+        <ProfileInfoCard studentName={studentName} />
 
-            <Pressable
-              onPress={handleOpenDeleteAccountDialog}
-              disabled={isAccountActionDisabled}
-              accessibilityRole="button"
-              accessibilityLabel="회원 탈퇴"
-              android_ripple={{ color: 'rgba(0, 0, 0, 0.06)' }}
-              hitSlop={4}
-            >
-              {({ pressed }) => (
-                <AccountActionButton $pressed={pressed}>
-                  <AccountActionLabel $pressed={pressed} $isDestructive>
-                    회원 탈퇴
-                  </AccountActionLabel>
-                </AccountActionButton>
-              )}
-            </Pressable>
-          </AccountActionList>
-        </SettingsSectionCard>
-      </SettingsContentContainer>
+        <ClassManagementCard
+          classLabel={classLabel}
+          studentName={studentName}
+          teacherName={teacherName}
+          onPressChange={handleOpenClassCodeDialog}
+        />
 
-      <Dialog
-        isVisible={isDeleteAccountDialogVisible}
-        title="정말 탈퇴하시겠어요?"
-        description={`탈퇴하면 학급 정보와 대화 내역이 모두 삭제되고,\n다시 복구할 수 없어요.`}
-        onRequestClose={handleCloseDeleteAccountDialog}
-        isDismissible={!isDeleteAccountLoading}
-        icon={
-          <IconBadge
-            symbol={IcError}
-            bgColor={theme.colors.semantic.errorSoft}
-            color={theme.colors.semantic.error}
-            iconSize={30}
-          />
-        }
-        footer={
-          <DialogButtonRow>
-            <DialogButtonWrapper>
-              <InlineButton
-                variant="ghost"
-                size="L"
-                label="취소"
-                disabled={isDeleteAccountLoading}
-                onPress={handleCloseDeleteAccountDialog}
-              />
-            </DialogButtonWrapper>
+        <TeacherScheduleCard schedules={schedules} />
 
-            <DialogButtonWrapper>
-              <InlineButton
-                variant="primary"
-                size="L"
-                label="탈퇴하기"
-                bgColor={theme.colors.semantic.error}
-                activeBgColor={theme.colors.semantic.errorPressed}
-                color={theme.colors.text.textW}
-                disabled={isDeleteAccountLoading}
-                onPress={handleConfirmDeleteAccount}
-              />
-            </DialogButtonWrapper>
-          </DialogButtonRow>
-        }
+        <AccountManagementCard
+          disabled={isAccountActionDisabled}
+          onPressLogout={handleLogout}
+          onPressDeleteAccount={handleOpenDeleteAccountDialog}
+        />
+      </SettingsScrollView>
+
+      <ClassCodeDialog
+        isVisible={isClassCodeDialogVisible}
+        classCode={classCode}
+        classCodeErrorMessage={classCodeErrorMessage}
+        classChangeErrorMessage={classChangeErrorMessage}
+        isLoading={isClassChangeLoading}
+        isSubmitDisabled={isClassCodeSubmitDisabled}
+        onChangeClassCode={handleChangeClassCode}
+        onClose={handleCloseClassCodeDialog}
+        onSubmit={handlePreviewClassChange}
       />
-    </SafeAreaView>
+
+      <ClassChangeConfirmDialog
+        isVisible={isClassConfirmDialogVisible}
+        classPreview={classPreview}
+        errorMessage={classChangeErrorMessage}
+        isChanging={isChangingClass}
+        onClose={handleCloseClassConfirmDialog}
+        onConfirm={handleConfirmClassChange}
+      />
+
+      <DeleteAccountDialog
+        isVisible={isDeleteAccountDialogVisible}
+        isLoading={isDeleteAccountLoading}
+        onClose={handleCloseDeleteAccountDialog}
+        onConfirm={handleConfirmDeleteAccount}
+      />
+    </SettingsScreenContainer>
   );
 };
 
-const SettingsContentContainer = styled.View({
-  paddingHorizontal: 16,
-  paddingVertical: 20,
+const SettingsScreenContainer = styled(SafeAreaView)({
+  flex: 1,
 });
 
-const AccountActionList = styled.View({
-  gap: 8,
-});
-
-const AccountActionButton = styled.View<{
-  $pressed: boolean;
-}>(({ theme, $pressed }) => ({
-  width: '100%',
-  paddingHorizontal: 16,
-  paddingVertical: 8,
-  backgroundColor: $pressed ? theme.colors.background.bg3 : theme.colors.background.bg1,
-}));
-
-const AccountActionLabel = styled.Text<{
-  $pressed: boolean;
-  $isDestructive: boolean;
-}>(({ theme, $pressed, $isDestructive }) => ({
-  ...theme.fonts.body2,
-  color: $isDestructive ? theme.colors.semantic.error : theme.colors.text.text1,
-  opacity: $pressed ? 0.7 : 1,
-}));
-
-const DialogButtonRow = styled.View({
-  flexDirection: 'row',
-  gap: 10,
-});
-
-const DialogButtonWrapper = styled.View({
+const SettingsScrollView = styled(ScrollView)({
   flex: 1,
 });
