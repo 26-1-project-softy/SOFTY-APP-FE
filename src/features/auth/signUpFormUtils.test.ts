@@ -6,11 +6,13 @@ import {
   getBirthDateErrorMessage,
   validateName,
   getNameErrorMessage,
+} from './signUpFormUtils';
+import {
+  getClassCodeErrorMessage,
   getNormalizedClassCode,
   hasInvalidClassCodeChar,
   validateClassCode,
-  getClassCodeErrorMessage,
-} from './signUpFormUtils';
+} from '@/utils/classCodeUtils';
 
 describe('signUpFormUtils', () => {
   describe('validateName', () => {
