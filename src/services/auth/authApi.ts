@@ -1,5 +1,7 @@
 import { apiClient, type ApiResponse } from '@/services/http';
 
+export type ActiveRole = 'PARENT' | 'TEACHER';
+
 export interface KakaoLoginRequest {
   kakaoAccessToken: string;
 }
@@ -22,7 +24,14 @@ export interface SignUpRequest {
 
 export interface SignUpData {
   userId: number;
-  role: string;
+  activeRole: ActiveRole;
+}
+
+export interface MeData {
+  activeRole: ActiveRole;
+  name: string;
+  grade: number;
+  class: number;
 }
 
 export const authApi = {
@@ -37,6 +46,18 @@ export const authApi = {
 
   signUpParent: async (payload: SignUpRequest) => {
     const response = await apiClient.post<ApiResponse<SignUpData>>('/auth/parents/signup', payload);
+
+    return response.data.data;
+  },
+
+  getMe: async (accessToken?: string) => {
+    const response = await apiClient.get<ApiResponse<MeData>>('/users/me', {
+      headers: accessToken
+        ? {
+            Authorization: `Bearer ${accessToken}`,
+          }
+        : undefined,
+    });
 
     return response.data.data;
   },
