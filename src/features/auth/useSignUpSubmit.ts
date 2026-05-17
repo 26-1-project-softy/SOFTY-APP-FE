@@ -7,6 +7,7 @@ import { useToastStore } from '@/stores/toastStore';
 
 const SIGN_UP_ERROR_MESSAGE = '학급 참여 중 오류가 발생했어요. 다시 시도해 주세요.';
 const INVALID_CLASS_CODE_MESSAGE = '존재하지 않는 학급이에요. 학급 코드를 다시 확인해 주세요.';
+const NOT_PARENT_ACTIVE_ROLE_MESSAGE = '학부모 역할로 접속한 계정만 이용할 수 있어요.';
 
 const getSignUpErrorMessage = (error: unknown) => {
   const apiError = error as ApiError | undefined;
@@ -37,6 +38,7 @@ export const useSignUpSubmit = () => {
   const accessToken = useAuthStore(state => state.accessToken);
   const refreshToken = useAuthStore(state => state.refreshToken);
   const setSignedIn = useAuthStore(state => state.setSignedIn);
+  const clearSession = useAuthStore(state => state.clearSession);
   const showToast = useToastStore(state => state.showToast);
 
   const signUpMutation = useMutation({
@@ -54,9 +56,18 @@ export const useSignUpSubmit = () => {
     try {
       await signUpMutation.mutateAsync(payload);
 
+      const me = await authApi.getMe(accessToken);
+
+      if (me.activeRole !== 'PARENT') {
+        clearSession();
+        showToast(NOT_PARENT_ACTIVE_ROLE_MESSAGE, 'error');
+        return;
+      }
+
       setSignedIn({
         accessToken,
         refreshToken,
+        activeRole: me.activeRole,
       });
     } catch (error) {
       showToast(getSignUpErrorMessage(error), 'error');

@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useToastStore } from '@/stores/toastStore';
 
 const KAKAO_LOGIN_ERROR_MESSAGE = '카카오 로그인 중 오류가 발생했어요. 다시 시도해 주세요.';
+const NOT_PARENT_ROLE_MESSAGE = '학부모 계정으로만 이용할 수 있어요.';
 
 const getKakaoLoginErrorMessage = (error: unknown): string | null => {
   const message = getErrorMessage(error, '');
@@ -31,6 +32,7 @@ export const useKakaoLogin = () => {
 
   const setSignupRequired = useAuthStore(state => state.setSignupRequired);
   const setSignedIn = useAuthStore(state => state.setSignedIn);
+  const clearSession = useAuthStore(state => state.clearSession);
   const showToast = useToastStore(state => state.showToast);
 
   const handleKakaoLogin = async () => {
@@ -54,9 +56,18 @@ export const useKakaoLogin = () => {
         return;
       }
 
+      const me = await authApi.getMe(loginData.accessToken);
+
+      if (me.activeRole !== 'PARENT') {
+        clearSession();
+        showToast(NOT_PARENT_ROLE_MESSAGE, 'error');
+        return;
+      }
+
       setSignedIn({
         accessToken: loginData.accessToken,
         refreshToken: loginData.refreshToken,
+        activeRole: me.activeRole,
       });
     } catch (error) {
       const toastMessage = getKakaoLoginErrorMessage(error);
