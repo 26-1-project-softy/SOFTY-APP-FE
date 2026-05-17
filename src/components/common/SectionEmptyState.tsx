@@ -11,7 +11,7 @@ type SectionEmptyStateProps = {
 export const SectionEmptyState = ({
   icon: Icon,
   title = '표시할 데이터가 없어요',
-  description = '나중에 다시 확인해 주세요.',
+  description,
 }: SectionEmptyStateProps) => {
   const theme = useTheme();
 
@@ -21,7 +21,7 @@ export const SectionEmptyState = ({
         <Icon color={theme.colors.text.text4} />
       </SectionEmptyIcon>
       <SectionEmptyStateTitle>{title}</SectionEmptyStateTitle>
-      <SectionEmptyStateDescription>{description}</SectionEmptyStateDescription>
+      {description && <SectionEmptyStateDescription>{description}</SectionEmptyStateDescription>}
     </SectionEmptyStateContainer>
   );
 };

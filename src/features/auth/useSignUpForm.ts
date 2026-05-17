@@ -4,13 +4,15 @@ import {
   getBirthDateDigits,
   getBirthDateDisplayText,
   getBirthDateErrorMessage,
-  getClassCodeErrorMessage,
-  validateClassCode,
   validateName,
   validateBirthDate,
   getNameErrorMessage,
-  getNormalizedClassCode,
 } from '@/features/auth/signUpFormUtils';
+import {
+  getClassCodeErrorMessage,
+  getNormalizedClassCode,
+  validateClassCode,
+} from '@/utils/classCodeUtils';
 
 export const useSignUpForm = () => {
   const [parentName, setParentName] = useState('');

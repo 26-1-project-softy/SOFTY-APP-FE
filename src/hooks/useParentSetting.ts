@@ -19,6 +19,7 @@ export const useParentSetting = () => {
     classLabel,
     studentName: parentSetting?.studentName ?? '',
     teacherName: parentSetting?.teacherName ?? '',
+    schedules: parentSetting?.schedules ?? [],
     isParentSettingLoading: parentSettingQuery.isLoading,
     isParentSettingError: parentSettingQuery.isError,
     refetchParentSetting: parentSettingQuery.refetch,
