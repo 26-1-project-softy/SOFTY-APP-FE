@@ -10,6 +10,10 @@ export const useReadThreadRoom = (chatRoomId: number) => {
       void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.threadList,
       });
+
+      void queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.threadMessages(chatRoomId),
+      });
     },
   });
 
