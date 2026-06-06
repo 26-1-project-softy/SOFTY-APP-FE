@@ -6,10 +6,14 @@ import { QUERY_KEYS } from '@/constants/queryKeys';
 import { threadDetailApi } from '@/services/threadDetailApi';
 
 const THREAD_MESSAGE_PAGE_SIZE = 30;
+const THREAD_MESSAGE_POLLING_INTERVAL_MS = 1000;
 
 export const useThreadMessages = (chatRoomId: number) => {
+  const isValidChatRoomId = Number.isFinite(chatRoomId) && chatRoomId > 0;
+
   const threadMessagesQuery = useInfiniteQuery({
     queryKey: QUERY_KEYS.threadMessages(chatRoomId),
+    enabled: isValidChatRoomId,
     queryFn: ({ pageParam }) =>
       threadDetailApi.getMessages({
         chatRoomId,
@@ -19,6 +23,8 @@ export const useThreadMessages = (chatRoomId: number) => {
     initialPageParam: undefined as number | undefined,
     getNextPageParam: lastPage =>
       lastPage.hasNext && lastPage.nextCursor !== null ? lastPage.nextCursor : undefined,
+    refetchInterval: THREAD_MESSAGE_POLLING_INTERVAL_MS,
+    refetchIntervalInBackground: false,
   });
 
   const messages: ThreadMessageItem[] = useMemo(() => {

@@ -12,10 +12,6 @@ export const useSendThreadMessage = (chatRoomId: number) => {
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.threadMessages(chatRoomId),
-      });
-
-      void queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.threadList,
       });
     },

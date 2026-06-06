@@ -13,24 +13,34 @@ export const useThreadRoomReadEffect = ({
   isError,
   readThreadRoom,
 }: UseThreadRoomReadEffectParams) => {
-  const hasReadRoomRef = useRef(false);
+  const lastReadMessageCountRef = useRef(0);
+  const isReadingRoomRef = useRef(false);
 
   useEffect(() => {
-    if (!messageCount || isLoading || isError || hasReadRoomRef.current) {
+    if (!messageCount || isLoading || isError || isReadingRoomRef.current) {
       return;
     }
 
-    hasReadRoomRef.current = true;
+    if (lastReadMessageCountRef.current === messageCount) {
+      return;
+    }
 
-    readThreadRoom().catch(error => {
-      if (__DEV__) {
-        console.log('채팅방 읽음 처리 실패', error);
-      }
-    });
+    lastReadMessageCountRef.current = messageCount;
+    isReadingRoomRef.current = true;
+
+    readThreadRoom()
+      .catch(error => {
+        if (__DEV__) {
+          console.log('채팅방 읽음 처리 실패', error);
+        }
+      })
+      .finally(() => {
+        isReadingRoomRef.current = false;
+      });
   }, [messageCount, isLoading, isError, readThreadRoom]);
 
   const resetReadRoom = () => {
-    hasReadRoomRef.current = false;
+    lastReadMessageCountRef.current = 0;
   };
 
   return {

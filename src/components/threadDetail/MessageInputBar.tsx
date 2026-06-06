@@ -4,6 +4,7 @@ import { Keyboard, Platform } from 'react-native';
 import { IconButton } from '@/components/common/IconButton';
 import { TextArea } from '@/components/common/TextArea';
 import { IcSend } from '@/assets/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type MessageInputBarProps = {
   value: string;
@@ -27,6 +28,7 @@ export const MessageInputBar = ({
   onFocusInput,
   onBlurInput,
 }: MessageInputBarProps) => {
+  const insets = useSafeAreaInsets();
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export const MessageInputBar = ({
     : MESSAGE_INPUT_CLOSED_BOTTOM_PADDING;
 
   return (
-    <MessageInputSection style={{ paddingBottom: bottomPadding }}>
+    <MessageInputSection style={{ paddingBottom: bottomPadding + insets.bottom }}>
       <TextArea
         value={value}
         placeholder="메시지를 작성해주세요."

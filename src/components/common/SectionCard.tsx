@@ -45,9 +45,8 @@ export const SectionCardContent = ({ children }: PropsWithChildren) => {
 const SectionCardContainer = styled.View(({ theme }) => ({
   minWidth: 0,
   borderRadius: 10,
-  borderWidth: 1,
-  borderColor: theme.colors.border.border1,
   backgroundColor: theme.colors.background.bg1,
+  ...theme.colors.shadow.card,
 }));
 
 const SectionCardHeader = styled.View({

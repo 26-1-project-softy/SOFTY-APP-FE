@@ -42,6 +42,18 @@ export const colors = {
     errorSoft: '#FAE3E2',
     errorPressed: '#E62636',
   },
+  shadow: {
+    card: {
+      shadowColor: '#000000',
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.06,
+      shadowRadius: 20,
+      elevation: 3,
+    },
+  },
   intent: {
     attendance: {
       text: '#BA420D',
