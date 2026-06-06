@@ -11,7 +11,7 @@ import {
   useScrollToLatestMessage,
   useThreadRoomReadEffect,
 } from '@/features/threadDetail/hooks';
-import { getErrorMessage } from '@/utils/getErrorMessage';
+import { getSendMessageErrorMessage } from '@/features/threadDetail/utils/getThreadDetailErrorMessage';
 import { Header } from '@/components/common/Header';
 import { Tag } from '@/components/common/Tag';
 import { Loader } from '@/components/common/Loader';
@@ -30,7 +30,6 @@ import { useToastStore } from '@/stores/toastStore';
 
 type ThreadDetailRouteProp = RouteProp<MainStackParamList, typeof MAIN_ROUTES.THREAD_DETAIL>;
 
-const SEND_MESSAGE_ERROR_MESSAGE = '메시지를 전송하지 못했어요. 잠시 후 다시 시도해 주세요.';
 const MESSAGE_LIST_TOP_PADDING = 12;
 const BANNER_OFFSET = 8;
 const BANNER_RESERVED_HEIGHT = 104;
@@ -75,7 +74,8 @@ export const ThreadDetailScreen = () => {
   const isRefreshing = isThreadDetailRefreshing || isThreadMessagesRefreshing;
   const isError = isThreadDetailError || isThreadMessagesError;
   const isCompleted = threadDetail?.status === INQUIRY_STATUS.COMPLETED;
-  const canSendMessage = !isCompleted && message.length > 0 && !isSendingThreadMessage;
+  const canSendMessage =
+    !isLoading && !isCompleted && message.length > 0 && !isSendingThreadMessage;
   const shouldShowTeacherOffBanner = isTeacherOff && !isCompleted && !isError;
   const shouldShowCompletedBanner = isCompleted && !isError;
   const shouldShowBanner = shouldShowTeacherOffBanner || shouldShowCompletedBanner;
@@ -113,7 +113,7 @@ export const ThreadDetailScreen = () => {
       setMessage('');
     } catch (error) {
       cancelScrollToLatestMessage();
-      showToast(getErrorMessage(error, SEND_MESSAGE_ERROR_MESSAGE), 'error');
+      showToast(getSendMessageErrorMessage(error), 'error');
     }
   };
 
@@ -190,7 +190,7 @@ export const ThreadDetailScreen = () => {
             </>
           )}
 
-          {!isCompleted && !isError && (
+          {!isLoading && !isCompleted && !isError && (
             <MessageInputBar
               value={message}
               disabled={isSendingThreadMessage}
