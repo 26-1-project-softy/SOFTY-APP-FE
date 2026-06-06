@@ -5,10 +5,10 @@ import { SectionCard, SectionCardContent } from '@/components/common/SectionCard
 import { IcDefaultProfile } from '@/assets/icons';
 
 type ProfileInfoCardProps = {
-  studentName: string;
+  parentName: string;
 };
 
-export const ProfileInfoCard = ({ studentName }: ProfileInfoCardProps) => {
+export const ProfileInfoCard = ({ parentName }: ProfileInfoCardProps) => {
   const theme = useTheme();
 
   return (
@@ -22,7 +22,7 @@ export const ProfileInfoCard = ({ studentName }: ProfileInfoCardProps) => {
             color={theme.colors.brand.dark}
           />
 
-          <ProfileName>{studentName}</ProfileName>
+          <ProfileName>{parentName}</ProfileName>
         </ProfileRow>
       </SectionCardContent>
     </SectionCard>

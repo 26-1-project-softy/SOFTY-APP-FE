@@ -12,8 +12,10 @@ import { ClassCodeDialog } from '@/components/settings/ClassCodeDialog';
 import { ClassChangeConfirmDialog } from '@/components/settings/ClassChangeConfirmDialog';
 import { DeleteAccountDialog } from '@/components/settings/DeleteAccountDialog';
 import { useLogout } from '@/features/auth/useLogout';
+import { useMe } from '@/features/settings/queries/useMe';
 import { useParentSetting } from '@/hooks/useParentSetting';
 import { useClassChangeFlow, useDeleteAccountFlow } from '@/features/settings/hooks';
+import { formatUserDisplayName } from '@/utils/formatUserDisplayName';
 
 export const SettingsScreen = () => {
   const {
@@ -26,6 +28,8 @@ export const SettingsScreen = () => {
     isParentSettingError,
     refetchParentSetting,
   } = useParentSetting();
+
+  const { me, isMeLoading, isMeError, refetchMe } = useMe();
 
   const {
     classCode,
@@ -61,9 +65,18 @@ export const SettingsScreen = () => {
     isDisabled: isLogoutLoading,
   });
 
+  const parentName = me?.name ?? '';
+
+  const isLoading = isParentSettingLoading || isMeLoading;
+  const isError = isParentSettingError || isMeError;
   const isAccountActionDisabled = isLogoutLoading || isDeleteAccountLoading;
 
-  if (isParentSettingLoading) {
+  const handleRetrySettings = () => {
+    void refetchParentSetting();
+    void refetchMe();
+  };
+
+  if (isLoading) {
     return (
       <SettingsScreenContainer edges={['bottom']}>
         <Header hasBackBtn title="설정" />
@@ -72,16 +85,11 @@ export const SettingsScreen = () => {
     );
   }
 
-  if (isParentSettingError || !parentSetting) {
+  if (isError || !parentSetting || !me) {
     return (
       <SettingsScreenContainer edges={['bottom']}>
         <Header hasBackBtn title="설정" />
-        <SectionErrorState
-          title="설정 정보를 불러오지 못했어요"
-          onRetry={() => {
-            void refetchParentSetting();
-          }}
-        />
+        <SectionErrorState title="설정 정보를 불러오지 못했어요" onRetry={handleRetrySettings} />
       </SettingsScreenContainer>
     );
   }
@@ -93,12 +101,12 @@ export const SettingsScreen = () => {
       <SettingsScrollView
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20, gap: 16 }}
       >
-        <ProfileInfoCard studentName={studentName} />
+        <ProfileInfoCard parentName={parentName} />
 
         <ClassManagementCard
           classLabel={classLabel}
           studentName={studentName}
-          teacherName={teacherName}
+          teacherName={formatUserDisplayName(parentSetting.teacherName)}
           onPressChange={handleOpenClassCodeDialog}
         />
 

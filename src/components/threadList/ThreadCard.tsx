@@ -1,4 +1,5 @@
 import styled from '@emotion/native';
+import { Pressable } from 'react-native';
 import { Tag } from '@/components/common/Tag';
 import type { ThreadListItem } from '@/features/threadList/hooks/useThreadList';
 
@@ -9,39 +10,57 @@ type ThreadCardProps = {
 
 export const ThreadCard = ({ item, onPress }: ThreadCardProps) => {
   return (
-    <ThreadCardButton onPress={onPress}>
-      <ThreadInfoArea>
-        <TagGroup>
-          <Tag intent={item.intent} />
-          <Tag status={item.status} />
-        </TagGroup>
+    <ThreadCardShadowContainer>
+      <ThreadCardPressable onPress={onPress} accessibilityRole="button">
+        {({ pressed }) => (
+          <ThreadCardContent $pressed={pressed}>
+            <ThreadInfoArea>
+              <TagGroup>
+                <Tag intent={item.intent} />
+                <Tag status={item.status} />
+              </TagGroup>
 
-        <ThreadPreviewText numberOfLines={2} ellipsizeMode="tail">
-          {item.lastMessage}
-        </ThreadPreviewText>
-      </ThreadInfoArea>
+              <ThreadPreviewText numberOfLines={2} ellipsizeMode="tail">
+                {item.lastMessage}
+              </ThreadPreviewText>
+            </ThreadInfoArea>
 
-      <ThreadMetaArea>
-        <ThreadTimeText>{item.lastMessageTime}</ThreadTimeText>
+            <ThreadMetaArea>
+              <ThreadTimeText>{item.lastMessageTime}</ThreadTimeText>
 
-        {item.unreadCount > 0 && (
-          <UnreadBadge>
-            <UnreadBadgeText>{item.unreadCount}</UnreadBadgeText>
-          </UnreadBadge>
+              {item.unreadCount > 0 && (
+                <UnreadBadge>
+                  <UnreadBadgeText>{item.unreadCount}</UnreadBadgeText>
+                </UnreadBadge>
+              )}
+            </ThreadMetaArea>
+          </ThreadCardContent>
         )}
-      </ThreadMetaArea>
-    </ThreadCardButton>
+      </ThreadCardPressable>
+    </ThreadCardShadowContainer>
   );
 };
 
-const ThreadCardButton = styled.Pressable(({ theme }) => ({
+const ThreadCardShadowContainer = styled.View(({ theme }) => ({
+  borderRadius: 10,
+  backgroundColor: theme.colors.background.bg1,
+  ...theme.colors.shadow.card,
+}));
+
+const ThreadCardPressable = styled(Pressable)({
+  borderRadius: 10,
+  overflow: 'hidden',
+});
+
+const ThreadCardContent = styled.View<{
+  $pressed: boolean;
+}>(({ theme, $pressed }) => ({
   flexDirection: 'row',
   backgroundColor: theme.colors.background.bg1,
   borderRadius: 10,
-  borderWidth: 1,
-  borderColor: theme.colors.border.border1,
   padding: 16,
   gap: 18,
+  opacity: $pressed ? 0.94 : 1,
 }));
 
 const ThreadInfoArea = styled.View({

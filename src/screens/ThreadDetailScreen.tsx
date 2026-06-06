@@ -1,5 +1,5 @@
 import styled from '@emotion/native';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Keyboard, KeyboardAvoidingView, RefreshControl } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
@@ -11,7 +11,7 @@ import {
   useScrollToLatestMessage,
   useThreadRoomReadEffect,
 } from '@/features/threadDetail/hooks';
-import { getSendMessageErrorMessage } from '@/features/threadDetail/utils/getThreadDetailErrorMessage';
+import { getErrorMessage } from '@/utils/getErrorMessage';
 import { Header } from '@/components/common/Header';
 import { Tag } from '@/components/common/Tag';
 import { Loader } from '@/components/common/Loader';
@@ -27,10 +27,13 @@ import { INQUIRY_STATUS } from '@/constants/inquiryStatus';
 import { MAIN_ROUTES } from '@/navigation/routes';
 import { IcChat } from '@/assets/icons';
 import { useToastStore } from '@/stores/toastStore';
+import { formatUserDisplayName, isWithdrawnUserName } from '@/utils/formatUserDisplayName';
 
 type ThreadDetailRouteProp = RouteProp<MainStackParamList, typeof MAIN_ROUTES.THREAD_DETAIL>;
 
+const SEND_MESSAGE_ERROR_MESSAGE = '메시지를 전송하지 못했어요. 잠시 후 다시 시도해 주세요.';
 const MESSAGE_LIST_TOP_PADDING = 12;
+const MESSAGE_LIST_BOTTOM_PADDING = 12;
 const BANNER_OFFSET = 8;
 const BANNER_RESERVED_HEIGHT = 104;
 
@@ -41,9 +44,8 @@ export const ThreadDetailScreen = () => {
   const { chatRoomId } = route.params;
 
   const [message, setMessage] = useState('');
-  const messageListRef = useRef<FlatList<ThreadMessageItem>>(null);
-
   const [isKeyboardAvoidingEnabled, setIsKeyboardAvoidingEnabled] = useState(false);
+  const messageListRef = useRef<FlatList<ThreadMessageItem>>(null);
 
   const { isTeacherOff } = useTeacherWorkStatus();
 
@@ -68,14 +70,22 @@ export const ThreadDetailScreen = () => {
   const { sendThreadMessage, isSendingThreadMessage } = useSendThreadMessage(chatRoomId);
   const { readThreadRoom } = useReadThreadRoom(chatRoomId);
 
-  const teacherName = threadDetail?.teacherName.trim();
+  const teacherName = threadDetail?.teacherName;
+  const displayTeacherName = formatUserDisplayName(teacherName);
+  const isWithdrawnTeacher = isWithdrawnUserName(teacherName);
+
+  const headerTitle = displayTeacherName
+    ? isWithdrawnTeacher
+      ? displayTeacherName
+      : `${displayTeacherName} 선생님`
+    : '채팅방';
 
   const isLoading = isThreadDetailLoading || isThreadMessagesLoading;
   const isRefreshing = isThreadDetailRefreshing || isThreadMessagesRefreshing;
   const isError = isThreadDetailError || isThreadMessagesError;
   const isCompleted = threadDetail?.status === INQUIRY_STATUS.COMPLETED;
   const canSendMessage =
-    !isLoading && !isCompleted && message.length > 0 && !isSendingThreadMessage;
+    !isLoading && !isCompleted && message.trim().length > 0 && !isSendingThreadMessage;
   const shouldShowTeacherOffBanner = isTeacherOff && !isCompleted && !isError;
   const shouldShowCompletedBanner = isCompleted && !isError;
   const shouldShowBanner = shouldShowTeacherOffBanner || shouldShowCompletedBanner;
@@ -87,22 +97,34 @@ export const ThreadDetailScreen = () => {
     readThreadRoom,
   });
 
-  const { requestScrollToLatestMessage, cancelScrollToLatestMessage } = useScrollToLatestMessage({
+  const {
+    requestScrollToLatestMessage,
+    cancelScrollToLatestMessage,
+    resetLatestMessageScrollState,
+    handleContentSizeChange,
+  } = useScrollToLatestMessage({
     listRef: messageListRef,
     itemCount: messages.length,
+    isReady: !isLoading && !isError,
   });
 
   const { handleScroll: handleMessageListScroll, handleLayout: handleMessageListLayout } =
     usePreserveScrollOnLayout(messageListRef, !isError);
 
+  useEffect(() => {
+    resetReadRoom();
+    resetLatestMessageScrollState();
+  }, [chatRoomId, resetLatestMessageScrollState, resetReadRoom]);
+
   const handleRefresh = () => {
     resetReadRoom();
+
     void refetchThreadDetail();
     void refetchThreadMessages();
   };
 
   const handlePressSend = async () => {
-    const messageContent = message;
+    const messageContent = message.trim();
 
     if (!canSendMessage) return;
 
@@ -110,10 +132,12 @@ export const ThreadDetailScreen = () => {
       requestScrollToLatestMessage();
 
       await sendThreadMessage(messageContent);
+      await refetchThreadMessages();
+
       setMessage('');
     } catch (error) {
       cancelScrollToLatestMessage();
-      showToast(getSendMessageErrorMessage(error), 'error');
+      showToast(getErrorMessage(error, SEND_MESSAGE_ERROR_MESSAGE), 'error');
     }
   };
 
@@ -125,7 +149,7 @@ export const ThreadDetailScreen = () => {
     <ThreadDetailScreenContainer>
       <Header
         hasBackBtn
-        title={teacherName ? `${teacherName} 선생님` : '채팅방'}
+        title={headerTitle}
         metadata={
           threadDetail ? (
             <HeaderTagList>
@@ -154,6 +178,7 @@ export const ThreadDetailScreen = () => {
                 onTouchStart={Keyboard.dismiss}
                 onScroll={handleMessageListScroll}
                 onLayout={handleMessageListLayout}
+                onContentSizeChange={handleContentSizeChange}
                 scrollEventThrottle={16}
                 refreshControl={
                   <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />
@@ -176,7 +201,7 @@ export const ThreadDetailScreen = () => {
                   flexGrow: 1,
                   paddingTop: shouldShowBanner ? BANNER_RESERVED_HEIGHT : MESSAGE_LIST_TOP_PADDING,
                   paddingHorizontal: 16,
-                  paddingBottom: 12,
+                  paddingBottom: MESSAGE_LIST_BOTTOM_PADDING,
                   gap: 16,
                 }}
               />
